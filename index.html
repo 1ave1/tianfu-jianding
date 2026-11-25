@@ -60,6 +60,12 @@
   .timebar{ height:8px; background:rgba(255,255,255,.12); border-radius:4px; overflow:hidden; margin-top:10px; }
   .timebar > div{ height:100%; background:#ffd54f; width:100%; }
   .bigshow{ text-align:center; font-size:52px; font-weight:900; letter-spacing:.15em; padding:26px 0; color:#ffe082; min-height:110px; }
+  /* ===== 体内时钟：每秒跳动的时间基准点 ===== */
+  .clockbeat{ display:flex; justify-content:center; align-items:center; height:36px; margin-bottom:2px; }
+  .clockbeat b{ position:relative; width:11px; height:11px; border-radius:50%; background:rgba(159,216,255,.30); animation:clockcore 1s ease-out infinite; }
+  .clockbeat b::after{ content:""; position:absolute; left:50%; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border-radius:50%; border:2px solid rgba(255,224,130,.95); animation:clockring 1s ease-out infinite; }
+  @keyframes clockcore{ 0%,12%{ transform:scale(1.55); background:#ffe082; box-shadow:0 0 16px rgba(255,224,130,.95); } 55%,100%{ transform:scale(1); background:rgba(159,216,255,.30); box-shadow:none; } }
+  @keyframes clockring{ 0%{ transform:scale(.55); opacity:.95; } 100%{ transform:scale(2.7); opacity:0; } }
   .keypad{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; max-width:280px; margin:0 auto; }
   .key{ font-size:24px; font-weight:900; padding:14px 0; border-radius:10px; border:2px solid rgba(159,216,255,.5); background:rgba(255,255,255,.07); color:#fff; cursor:pointer; text-align:center; user-select:none; }
   .key:active{ background:rgba(79,195,247,.35); }
@@ -1232,18 +1238,23 @@ function gameDots(stage, done){
 
 /* ---- 16. internal clock (time sense) ---- */
 function gameClock(stage, done){
+  /* 每秒跳动的时间基准点 —— 在「目标 N 秒」上方的空位给受测者基本时间观念 */
+  const beat = document.createElement("div"); beat.className = "clockbeat";
+  const dot = document.createElement("b");
+  beat.appendChild(dot);
   const showEl = document.createElement("div"); showEl.className = "bigshow"; showEl.style.fontSize = "44px";
   const msg = document.createElement("div"); msg.className = "instr"; msg.style.textAlign = "center";
   const btn = document.createElement("button"); btn.className = "choice";
   btn.style.display = "block"; btn.style.width = "100%"; btn.style.textAlign = "center";
   btn.style.fontSize = "22px"; btn.style.fontWeight = "900"; btn.style.marginTop = "14px";
-  stage.appendChild(showEl); stage.appendChild(msg); stage.appendChild(btn);
+  stage.appendChild(beat); stage.appendChild(showEl); stage.appendChild(msg); stage.appendChild(btn);
   const TARGETS = [5, 10];
   let round = 0, scores = [], errs = [], startedAt = 0, phase = "ready";
   function startRound(){ tapGuard(stage);
     round++; phase = "ready";
+    beat.style.display = "";   /* 每轮重新显示跳动点 */
     showEl.textContent = "目标 " + TARGETS[round-1] + "秒";
-    msg.textContent = "点击开始后开始计时。屏幕上不会显示任何内容。";
+    msg.textContent = "点击开始后开始计时。屏幕不会显示秒数。";
     btn.textContent = "开始";
   }
   btn.onclick = ()=>{
@@ -1251,6 +1262,7 @@ function gameClock(stage, done){
       phase = "run"; startedAt = performance.now();
       showEl.textContent = "・・・"; msg.textContent = "只能在心里数。觉得差不多了就点停止。";
       btn.textContent = "停止";
+      beat.style.display = "none";   /* 点击开始后跳动点消失 */
     } else if (phase === "run"){
       phase = "fb";
       const sec = (performance.now() - startedAt) / 1000;
@@ -1263,7 +1275,7 @@ function gameClock(stage, done){
     } else if (phase === "fb"){
       if (round >= 2){
         const avg = Math.round(scores.reduce((a,b)=>a+b,0) / scores.length);
-        const avgErr = Math.round(errs.reduce((a,b)=>a+b,0) / errs.length * 100);
+        const avgErr = Math.round(errs.reduce((a,b)=>a+b,0) / scores.length * 100);
         done(clamp(avg, 5, 100), "平均误差 " + avgErr + "% 的体内时钟");
       } else startRound();
     }
