@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>天赋鉴定 〜找到你的天赋〜</title>
-<meta property="og:title" content="天赋鉴定 〜找到你的天赋〜">
+<title>异世界の天赋测定</title>
+<meta property="og:title" content="异世界の天赋测定">
 <meta property="og:description" content="用16个小游戏实测你被称为「灵感」的天赋。结果以异世界风格能力表＋职业＋称号呈现。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://1ave1.github.io/tianfu-jianding/">
@@ -15,7 +15,7 @@
 <meta property="og:locale" content="zh_CN">
 <link rel="canonical" href="https://1ave1.github.io/tianfu-jianding/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="天赋鉴定 〜找到你的天赋〜">
+<meta name="twitter:title" content="异世界の天赋测定">
 <meta name="twitter:description" content="用16个小游戏实测你被称为「灵感」的天赋。结果以异世界风格能力表＋职业＋称号呈现。">
 <meta name="twitter:image" content="https://1ave1.github.io/tianfu-jianding/og.png">
 <style>
@@ -328,8 +328,8 @@
 
 <!-- ===== TITLE ===== -->
 <section id="scr-title" class="screen active">
-  <h1 class="logo">天赋鉴定</h1>
-  <p class="tagline">〜找到属于你的天赋〜<br>用16个小游戏实测你的「灵感」，<br>以异世界职业与称号为你作出鉴定。</p>
+  <h1 class="logo">异世界の天赋测定</h1>
+  <p class="tagline">〜异世界转生者的才能探知〜<br>用16个小游戏实测你的「灵感」，<br>以异世界职业与称号为你作出鉴定。</p>
   <div class="win">
     <div class="win-head">― 冒险者登记 ―</div>
     <label class="lbl" for="nameInput">名字（将显示在能力表上）</label>
@@ -2195,7 +2195,7 @@ function finishBattle(){
 }
 function shareBoss(){
   const b = bossState, job = S.jobObj ? S.jobObj.name : "";
-  const text = "『天赋鉴定』" + (b && b.hard ? "完全制霸" : "制霸") + "了" + (b && b.grade ? "（评级" + b.grade + "）" : "") + "\nLv" + (S.finalLv || 0) + "・【" + job + "】\n必杀技为《" + ((ULT[job] || ULT["勇者"]).name) + "》\n#天赋鉴定\n" + location.href;
+  const text = "『异世界の天赋测定』" + (b && b.hard ? "完全制霸" : "制霸") + "了" + (b && b.grade ? "（评级" + b.grade + "）" : "") + "\nLv" + (S.finalLv || 0) + "・【" + job + "】\n必杀技为《" + ((ULT[job] || ULT["勇者"]).name) + "》\n#异世界の天赋测定\n" + location.href;
   window.open("https://tianfu-jianding.pages.dev/?text=" + encodeURIComponent(text), "_blank");
 }
 $("btnBossShare").onclick = shareBoss;
@@ -2205,7 +2205,7 @@ $("btnBossEnd").onclick = ()=>{ show("scr-result"); refreshBossArea(); };
 /* ================= SHARE ================= */
 $("btnTweet").onclick = ()=>{
   const jobName = S.jobObj ? S.jobObj.name : "";
-  const text = "『天赋鉴定』鉴定出了我的能力！\n职业是【" + jobName + "】 Lv." + (S.finalLv||"") + "\n称号是『" + (S.finalTitle||"") + "』" + (S.bossResult === "win" ? "。还「" + (S.bossHard ? "完全制霸" : "制霸") + "」了！" : "") + "\n你的灵感有多少分？ #天赋鉴定";
+  const text = "『异世界の天赋测定』鉴定出了我的能力！\n职业是【" + jobName + "】 Lv." + (S.finalLv||"") + "\n称号是『" + (S.finalTitle||"") + "』" + (S.bossResult === "win" ? "。还「" + (S.bossHard ? "完全制霸" : "制霸") + "」了！" : "") + "\n你的灵感有多少分？ #异世界の天赋测定";
   window.open("https://tianfu-jianding.pages.dev/?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(location.href), "_blank");
 };
 $("btnSaveImg").onclick = ()=>{
@@ -2244,7 +2244,7 @@ $("btnSaveImg").onclick = ()=>{
   x.fillStyle = "#ffe082"; x.font = "900 30px sans-serif"; x.textAlign = "left";
   x.fillText("称号：『" + S.finalTitle + "』", 70, 575);
   x.fillStyle = "#cfeaff"; x.font = "24px sans-serif"; x.textAlign = "right";
-  x.fillText(S.bossResult === "win" ? (S.bossHard ? "👑 完全制霸" : "👑 制霸") : "天赋鉴定", 1130, 575);
+  x.fillText(S.bossResult === "win" ? (S.bossHard ? "👑 完全制霸" : "👑 制霸") : "异世界の天赋测定", 1130, 575);
   x.textAlign = "left";
   const a = document.createElement("a");
   a.download = "talent-status.png"; a.href = cv.toDataURL("image/png"); a.click();
