@@ -100,6 +100,9 @@
   .st-sec .sec-label{ color:#9fd8ff; font-size:11px; letter-spacing:.2em; }
   #stComment{ font-size:13px; color:#cfeaff; line-height:1.7; margin-top:6px; }
   footer{ text-align:center; font-size:11px; color:#5f7d99; margin-top:26px; line-height:1.8; }
+  .credit{ font-size:11px; color:#4e6a84; text-align:center; margin-top:30px; line-height:1.9; }
+  .credit a{ color:#6b8ba8; text-decoration:none; border-bottom:1px dotted rgba(107,139,168,.45); }
+  .credit a:hover{ color:#9fd8ff; }
 
   /* ===== DQ-style boss battle ===== */
   #bossStage{ position:relative; background:radial-gradient(ellipse at 50% 68%, rgba(142,36,170,.50), rgba(10,6,24,0) 62%), radial-gradient(ellipse at 82% 8%, rgba(63,81,181,.35), rgba(0,0,0,0) 55%), #070714; border-radius:10px; padding:12px 10px 14px; overflow:hidden; }
@@ -320,10 +323,6 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="rfg-nav">
-  <a class="rfg-btn" href="./" data-home="1">🏠 HOME</a>
-  <a class="rfg-btn" href="https://1ave1.github.io/tianfu-jianding/">🎮 看看其他游戏</a>
-</nav>
 
 <!-- ===== TITLE ===== -->
 <section id="scr-title" class="screen active">
@@ -342,7 +341,7 @@
     <p class="note">也可以只玩单个项目。成绩会按项目分别保留最佳记录。</p>
     <div id="singleList"></div>
   </div>
-  <footer>中文本地化改编自 <a href="https://1ave1.github.io/tianfu-jianding/" target="_blank" rel="noopener">才能探し</a>（原作者：red-freegames）<br>直播・录屏・视频投稿・商业化OK<br>天赋鉴定所</footer>
+  <p class="credit">中文本地化改编自 <a href="https://red-freegames.github.io/sainou-sagashi/" target="_blank" rel="noopener">才能探し</a><br>原作者 red-freegames ・ 本地化 <a href="https://github.com/1ave1/tianfu-jianding" target="_blank" rel="noopener">1ave1/tianfu-jianding</a></p>
 </section>
 
 <!-- ===== GAME ===== -->
@@ -376,11 +375,7 @@
   <button class="btn blue" id="btnSaveImg">保存能力表图片</button>
   <button class="btn" id="btnTweet">分享到X</button>
   <button class="btn sub" id="btnRestart">再鉴定一次</button>
-  <nav class="rfg-nav" style="margin-top:16px;">
-    <a class="rfg-btn" href="./" data-home="1">🏠 HOME</a>
-    <a class="rfg-btn" href="https://1ave1.github.io/tianfu-jianding/">🎮 看看其他游戏</a>
-  </nav>
-  <footer>中文本地化改编自 <a href="https://1ave1.github.io/tianfu-jianding/" target="_blank" rel="noopener">才能探し</a>（原作者：red-freegames）<br>直播・录屏・视频投稿・商业化OK<br>天赋鉴定所</footer>
+  <p class="credit">中文本地化改编自 <a href="https://red-freegames.github.io/sainou-sagashi/" target="_blank" rel="noopener">才能探し</a><br>原作者 red-freegames ・ 本地化 <a href="https://github.com/1ave1/tianfu-jianding" target="_blank" rel="noopener">1ave1/tianfu-jianding</a></p>
 </section>
 
 <!-- ===== SINGLE RESULT ===== -->
