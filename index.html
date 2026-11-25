@@ -989,19 +989,28 @@ function gameTrace(stage, done){
   cv.width = 340; cv.height = 260;
   cv.style.display = "block"; cv.style.margin = "0 auto"; cv.style.background = "rgba(255,255,255,.05)";
   cv.style.border = "2px solid rgba(159,216,255,.4)"; cv.style.borderRadius = "10px"; cv.style.touchAction = "none";
+  const msg = document.createElement("div"); msg.className = "instr";
+  msg.style.textAlign = "center"; msg.style.marginTop = "8px"; msg.style.fontSize = "14px";
+  msg.style.color = "#cfeaff"; msg.style.lineHeight = "1.6";
   const btn = document.createElement("button"); btn.className = "btn"; btn.textContent = "确定";
-  stage.appendChild(cv); stage.appendChild(btn);
+  stage.appendChild(cv); stage.appendChild(msg); stage.appendChild(btn);
   const ctx = cv.getContext("2d");
   function genZigzag(){ const pts = []; [26,88,150,212,274,314].forEach(x=>pts.push([x, Math.round(rand(56,204))])); return pts; }
   function genSpiral(){ const pts = []; const cx = 170, cy = 130;
     for (let a = 0; a <= Math.PI*4.6; a += 0.22){ const r = 8 + a*9.2; pts.push([cx + Math.cos(a)*r, cy + Math.sin(a)*r*0.82]); } return pts; }
   function genWave(){ const pts = []; for (let x = 20; x <= 320; x += 10) pts.push([x, Math.round(130 + Math.sin(x/38)*72)]); return pts; }
   function genLoop(){ const pts = []; for (let a = 0; a <= Math.PI*3.2; a += 0.25){ const r = 80 - a*4.5; pts.push([170 + Math.cos(a)*r, 130 + Math.sin(a)*r*0.8]); } return pts; }
-  let round = 0, roundScores = [], drawn = [], drawing = false, path = [], dense = [];
+  /* ===== 时间维度参数 ===== */
+  const TARGET_SPEED = 60;   /* 目标描摹速度 px/s：以此速度描完得速度分 66 */
+  const SPEED_LENIENT = 1.3; /* 螺旋曲率大、难控制，时间基准放宽 30% */
+  const W_COVER = 40, W_ACC = 30, W_SPEED = 30;
+  let round = 0, roundScores = [], roundInfo = [], drawn = [], drawing = false, path = [], dense = [];
+  let bench = 0, t0 = 0;
   function densePath(p){ const out = []; for (let i = 1; i < p.length; i++){ const x1 = p[i-1][0], y1 = p[i-1][1], x2 = p[i][0], y2 = p[i][1];
       const d = Math.hypot(x2-x1, y2-y1), steps = Math.max(1, Math.round(d/6));
       for (let s = 0; s < steps; s++) out.push([x1 + (x2-x1)*s/steps, y1 + (y2-y1)*s/steps]); }
     out.push(p[p.length-1]); return out; }
+  function pathLen(p){ let L = 0; for (let i = 1; i < p.length; i++) L += Math.hypot(p[i][0]-p[i-1][0], p[i][1]-p[i-1][1]); return L; }
   function redraw(){
     ctx.clearRect(0,0,340,260);
     ctx.strokeStyle = "rgba(110,198,255,.85)"; ctx.lineWidth = 5; ctx.lineJoin = "round"; ctx.beginPath();
@@ -1014,30 +1023,64 @@ function gameTrace(stage, done){
     return Math.hypot(px-(x1+t*dx), py-(y1+t*dy)); }
   function distToPath(px,py){ let m = 1e9; for (let i = 1; i < path.length; i++){ const d = segDist(px,py,path[i-1][0],path[i-1][1],path[i][0],path[i][1]); if (d < m) m = d; } return m; }
   function evPos(ev){ if (!ev || typeof ev.offsetX !== "number") return { x:170, y:130 }; return { x:ev.offsetX, y:ev.offsetY }; }
-  cv.onpointerdown = ev => { drawing = true; const p = evPos(ev); drawn.push([p.x,p.y]); redraw(); };
+  cv.onpointerdown = ev => { if (!t0) t0 = performance.now(); drawing = true; const p = evPos(ev); drawn.push([p.x,p.y]); redraw(); };
   cv.onpointermove = ev => { if (!drawing) return; const p = evPos(ev); const last = drawn[drawn.length-1];
     if (!last || Math.hypot(p.x-last[0], p.y-last[1]) > 3){ drawn.push([p.x,p.y]); redraw(); } };
   cv.onpointerup = ()=>{ drawing = false; };
   cv.onpointerleave = ()=>{ drawing = false; };
   function startRound(){
-    round++; drawn = []; drawing = false;
-    path = round === 1 ? genZigzag() : pick([genSpiral(), genWave(), genLoop()]); dense = densePath(path);
+    round++; drawn = []; drawing = false; t0 = 0;
+    let spiral = false;
+    if (round === 1) path = genZigzag();
+    else { const kind = pick(["spiral","wave","loop"]);
+      if (kind === "spiral"){ path = genSpiral(); spiral = true; }
+      else if (kind === "wave") path = genWave();
+      else path = genLoop(); }
+    dense = densePath(path);
+    /* 时间基准 = 路径长度 ÷ 目标速度；螺旋额外放宽 */
+    bench = pathLen(path) / TARGET_SPEED * (spiral ? SPEED_LENIENT : 1);
+    msg.textContent = "";
     redraw();
   }
   btn.onclick = ()=>{
     let score = 5;
-    if (drawn.length > 3){
+    let coverScore = 0, accScore = 0, speedScore = 0;
+    const elapsed = t0 ? (performance.now() - t0) / 1000 : 0;
+    if (drawn.length > 3 && t0){
       let devSum = 0; drawn.forEach(p=>{ devSum += distToPath(p[0],p[1]); });
       const avgDev = devSum/drawn.length;
       let covered = 0;
       dense.forEach(sp=>{ let m = 1e9; drawn.forEach(dp=>{ const d = Math.hypot(sp[0]-dp[0], sp[1]-dp[1]); if (d < m) m = d; }); if (m <= 12) covered++; });
       const coverage = covered/dense.length;
-      score = clamp(Math.round(coverage*55 + clamp(50 - avgDev*1.4, 0, 45)), 5, 100);
+      /* 有效系数：完成度达到 50% 才算「认真在描」，否则准确度与速度分不予计
+         （防止只点几个点却白拿准确度/速度分） */
+      const eff = clamp(coverage / 0.5, 0, 1);
+      coverScore = coverage * W_COVER;                                        /* 完成度 40 分 */
+      accScore = clamp(50 - avgDev*1.4, 0, 45) / 45 * W_ACC * eff;            /* 准确度 30 分 */
+      /* 速度 30 分：基准速度(60px/s)得 66 分，需 2 倍于基准线得满分；
+         超过 2 倍基准时间(≈30px/s)视为超时，速度分归零（软惩罚，可继续描摹） */
+      speedScore = clamp((bench*2 - elapsed) / (bench*1.5) * 100, 0, 100) * (W_SPEED/100) * eff;
+      score = clamp(Math.round(coverScore + accScore + speedScore), 5, 100);
+      const over = elapsed > bench*2;
+      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b> ／ 基准 ' + bench.toFixed(1) + '秒'
+        + '<br><span style="font-size:13px;color:#9fd8ff;">完成度 ' + Math.round(coverScore) + ' + 准确度 ' + Math.round(accScore)
+        + ' + 速度 ' + Math.round(speedScore) + (over ? '（超时，速度分归零）' : '') + '</span>';
     }
     roundScores.push(score);
-    if (round >= 2){ const avg = Math.round(roundScores.reduce((a,b)=>a+b,0)/roundScores.length);
-      done(avg, "按描摹完成度与准确度判定"); }
-    else startRound();
+    roundInfo.push({ score:score, elapsed:elapsed, bench:bench });
+    if (round >= 2){
+      const avg = Math.round(roundScores.reduce((a,b)=>a+b,0)/roundScores.length);
+      const valid = roundInfo.filter(r => r.elapsed > 0);
+      const avgE = valid.length ? valid.reduce((a,b)=>a+b.elapsed,0)/valid.length : 0;
+      const avgB = roundInfo.reduce((a,b)=>a+b.bench,0)/roundInfo.length;
+      const detail = valid.length
+        ? "完成度+准确度+速度计分，用时 " + avgE.toFixed(1) + "秒（基准 " + avgB.toFixed(1) + "秒）"
+        : "完成度+准确度+速度计分";
+      done(avg, detail);
+    } else {
+      btn.disabled = true; btn.textContent = "下一题…";
+      T(()=>{ btn.disabled = false; btn.textContent = "确定"; startRound(); }, 1100);
+    }
   };
   startRound();
 }
@@ -1448,8 +1491,8 @@ const GAMES = [
     rule:"数字排列存在规律。从3个选项中选出下一个数字。共5题，最后一题相当难。" },
   { cat:"memory",  title:"数字闪记", instr:"记住一闪而过的数字，用键盘输入。", run:gameDigit,
     rule:"数字只会显示一瞬。记住后用键盘输入并按「OK」。位数依次为6→7→9。" },
-  { cat:"art",     title:"描摹走线", instr:"沿着线条描摹。按准确度与完成度计分。", run:gameTrace,
-    rule:"用手指沿显示的线条描摹。不偏离线条并描到最后，得分越高。共2题，第2题会是漩涡、波浪或圆环之一。" },
+  { cat:"art",     title:"描摹走线", instr:"沿着线条描摹。按准确度、完成度与速度计分。", run:gameTrace,
+    rule:"用手指沿显示的线条描摹。不偏离线条并描到最后，得分越高。这个测试对速度有要求，速度也会计入评分。" },
   { cat:"calc",    title:"心算挑战", instr:"从3个选项中选出答案。按速度与准确度计分。", run:gameCalc,
     rule:"从3个选项中选出计算结果。共5题，难度递增，速度也会计入评分。" },
   { cat:"focus",   title:"斯特鲁普测试", instr:"要回答的是文字的「颜色」而不是「含义」。别被迷惑，选出正确的。", run:gameStroop,
