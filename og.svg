@@ -7,8 +7,9 @@
   </defs>
   <rect width="1200" height="630" fill="#070d24"/>
   <rect x="56" y="56" width="1088" height="518" rx="24" fill="url(#win)" stroke="#6ec6ff" stroke-width="6"/>
-  <text x="600" y="176" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="30" letter-spacing="14" fill="#9fd8ff">― 能力表 ―</text>
-  <text x="600" y="330" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="148" font-weight="900" letter-spacing="10" fill="#ffe082">天赋鉴定</text>
-  <text x="600" y="420" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="42" fill="#cfeaff">用16个小游戏实测你的「灵感」</text>
-  <text x="600" y="492" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="34" fill="#9fd8ff">异世界职业 × 称号鉴定 ｜ 改编自 red-freegames 原作</text>
+  <text x="600" y="148" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="30" letter-spacing="14" fill="#9fd8ff">― 能力表 ―</text>
+  <text x="600" y="285" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="104" font-weight="900" letter-spacing="6" fill="#ffe082">异世界の</text>
+  <text x="600" y="405" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="104" font-weight="900" letter-spacing="6" fill="#ffe082">天赋测定</text>
+  <text x="600" y="480" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="38" fill="#cfeaff">用16个小游戏实测你的「灵感」</text>
+  <text x="600" y="535" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="28" fill="#9fd8ff">异世界职业 × 称号鉴定 ｜ 改编自 red-freegames 原作</text>
 </svg>
