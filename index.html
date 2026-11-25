@@ -1062,9 +1062,8 @@ function gameTrace(stage, done){
       speedScore = clamp((bench*2 - elapsed) / (bench*1.5) * 100, 0, 100) * (W_SPEED/100) * eff;
       score = clamp(Math.round(coverScore + accScore + speedScore), 5, 100);
       const over = elapsed > bench*2;
-      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b> ／ 基准 ' + bench.toFixed(1) + '秒'
-        + '<br><span style="font-size:13px;color:#9fd8ff;">完成度 ' + Math.round(coverScore) + ' + 准确度 ' + Math.round(accScore)
-        + ' + 速度 ' + Math.round(speedScore) + (over ? '（超时，速度分归零）' : '') + '</span>';
+      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b>'
+        + (over ? '<br><span style="font-size:13px;color:#9fd8ff;">超时，速度分归零</span>' : '');
     }
     roundScores.push(score);
     roundInfo.push({ score:score, elapsed:elapsed, bench:bench });
@@ -1072,10 +1071,7 @@ function gameTrace(stage, done){
       const avg = Math.round(roundScores.reduce((a,b)=>a+b,0)/roundScores.length);
       const valid = roundInfo.filter(r => r.elapsed > 0);
       const avgE = valid.length ? valid.reduce((a,b)=>a+b.elapsed,0)/valid.length : 0;
-      const avgB = roundInfo.reduce((a,b)=>a+b.bench,0)/roundInfo.length;
-      const detail = valid.length
-        ? "完成度+准确度+速度计分，用时 " + avgE.toFixed(1) + "秒（基准 " + avgB.toFixed(1) + "秒）"
-        : "完成度+准确度+速度计分";
+      const detail = valid.length ? "用时 " + avgE.toFixed(1) + "秒" : "未描摹";
       done(avg, detail);
     } else {
       btn.disabled = true; btn.textContent = "下一题…";
