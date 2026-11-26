@@ -1041,11 +1041,12 @@ function gameTrace(stage, done){
   const SPEED_LENIENT = 1.3; /* 螺旋曲率大、难控制，时间门槛放宽 30% */
   /* 三项权重：完成度 30 / 准确度 45 / 速度 25 —— 侧重「画得准不准」 */
   const W_COVER = 30, W_ACC = 45, W_SPEED = 25;
-  /* 准确度容差：偏离在 ACC_TOL(px) 以内视为满分（容忍手指自然抖动），
+  /* 准确度容差：偏离在 ACC_TOL(px) 以内视为满分（容忍手指自然抖动与切角），
      超过后线性衰减，到 ACC_ZERO(px) 归零。
      判定用「90分位」而非平均值：允许 10% 的点离群（起笔收笔的自然失误），
-     但能抓住「系统性画偏」和「局部大偏」，避免平均值把严重偏差稀释掉。 */
-  const ACC_TOL = 3, ACC_ZERO = 8;
+     但能抓住「系统性画偏」和「局部大偏」，避免平均值把严重偏差稀释掉。
+     参数依实测校准：正常认真描摹 p90≈5.5px 时约得 40/45 分。 */
+  const ACC_TOL = 4, ACC_ZERO = 14;
   const ACC_Q = 0.90;   /* 分位数：容忍 10% 的离群点 */
   let round = 0, roundScores = [], roundInfo = [], drawn = [], drawing = false, path = [], dense = [];
   let bench = 0, gate = 0, floor = 0, t0 = 0;
@@ -1068,7 +1069,7 @@ function gameTrace(stage, done){
   function evPos(ev){ if (!ev || typeof ev.offsetX !== "number") return { x:170, y:130 }; return { x:ev.offsetX, y:ev.offsetY }; }
   cv.onpointerdown = ev => { if (!t0) t0 = performance.now(); drawing = true; const p = evPos(ev); drawn.push([p.x,p.y]); redraw(); };
   cv.onpointermove = ev => { if (!drawing) return; const p = evPos(ev); const last = drawn[drawn.length-1];
-    if (!last || Math.hypot(p.x-last[0], p.y-last[1]) > 3){ drawn.push([p.x,p.y]); redraw(); } };
+    if (!last || Math.hypot(p.x-last[0], p.y-last[1]) > 2){ drawn.push([p.x,p.y]); redraw(); } };
   cv.onpointerup = ()=>{ drawing = false; };
   cv.onpointerleave = ()=>{ drawing = false; };
   function startRound(){
@@ -1107,7 +1108,7 @@ function gameTrace(stage, done){
       const eff = clamp(coverage / 0.5, 0, 1);
       coverScore = coverage * W_COVER;                                        /* 完成度 30 分 */
       /* 准确度 45 分：用 90分位偏离 判定，
-         <= ACC_TOL(3px) 拿满分，3px~ACC_ZERO(8px) 之间线性衰减，8px 以上归零 */
+         <= ACC_TOL(4px) 拿满分，4px~ACC_ZERO(14px) 之间线性衰减，14px 以上归零 */
       const accDev = p90Dev;
       const accRaw = accDev <= ACC_TOL ? W_ACC
                     : accDev >= ACC_ZERO ? 0
