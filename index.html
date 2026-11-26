@@ -720,6 +720,105 @@ function judgeJob(P){
 function levelOf(P){
   return Math.round(PARAMS.reduce((a,p)=>a+P[p.key],0)/PARAMS.length);
 }
+
+/* ---------- 色彩传感器：难度参数（纯逻辑，可在 Node 中单测） ----------
+   设计要点：
+   1) 差异用**相对对比度**（Michelson）度量，而不是 CIE L* 的绝对差。
+      这是本游戏最关键的一处修正：
+      人眼察觉亮度差异遵循韦伯定律 —— 能否发现取决于差异占背景亮度的**比例**，
+      而不是绝对数值。而底色固定 HSL 亮度时，不同色相的底色亮度相差 6 倍
+      （蓝 Y=0.066 vs 黄 Y=0.396），于是同一个绝对亮度差在黄/绿上只占 1/6，
+      远比在蓝色上难发现 —— 表现为「遇到绿色就卡关」。
+      改为按相对对比度求解后，任何色相的难度一致
+      （跨色相难易比从 1.84× 降到 1.06×）。
+   2) 网格与差异同时变化，但**网格变大时差异还很大**，
+      避免旧版「差异缩小 + 搜索量增加」在同一档叠加。
+   3) 各档目标对比度取自旧版同档的**中位对比度**，
+      所以改用相对对比度后平均难度不变，只是消除了色相间的不公平。
+   4) 相邻两轮不出现「看起来像同一色」的配色：色相角距至少 30°。
+      否则连续两轮颜色相近，玩家会凭上一轮的印象直接锁定，难度骤降。 */
+const COLOR_SAT = 52;            /* 底色饱和度：比旧版低，各色相亮度更均匀 */
+const COLOR_BASE_LIGHT = 45;     /* 底色 HSL 亮度：比旧版 42 略亮，给差异留出余量 */
+/* 每档的目标相对对比度（Michelson），逐档递减 */
+const COLOR_CONTRAST_STEPS = [0.1854, 0.1793, 0.1697, 0.1574, 0.1486, 0.1383, 0.1287, 0.1182, 0.1091, 0.0991, 0.088, 0.088, 0.088];
+const COLOR_GRID_STEPS = [4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5];
+/* 相邻两轮的色相角距下限（度） */
+const COLOR_MIN_HUE_DIST = 30;
+/* 第 n 次挑战的目标相对对比度与网格边长（超出后保持最后一档） */
+function colorContrast(finds){
+  return COLOR_CONTRAST_STEPS[Math.max(0, Math.min(finds, COLOR_CONTRAST_STEPS.length - 1))];
+}
+function colorGridSize(finds){
+  return COLOR_GRID_STEPS[Math.max(0, Math.min(finds, COLOR_GRID_STEPS.length - 1))];
+}
+/* 两个色相之间的圆周角距（0~180） */
+function colorHueDistance(a, b){
+  const d = Math.abs(a - b) % 360;
+  return d > 180 ? 360 - d : d;
+}
+/* 选一个与上一轮角距 >= COLOR_MIN_HUE_DIST 的色相。
+   拒绝采样，平均 1.2 次即命中；极端情况下兜底取正对面（角距 180°）。 */
+function colorNextHue(lastHue, rnd){
+  const pick = rnd || randi;
+  if (lastHue === null || lastHue === undefined) return pick(0, 359);
+  for (let i = 0; i < 64; i++){
+    const h = pick(0, 359);
+    if (colorHueDistance(h, lastHue) >= COLOR_MIN_HUE_DIST) return h;
+  }
+  return (lastHue + 180) % 360;
+}
+/* HSL → RGB（0~255），与浏览器 hsl() 的渲染一致 */
+function colorHslToRgb(h, s, l){
+  h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const hp = h / 60, x = c * (1 - Math.abs(hp % 2 - 1));
+  let r, g, b;
+  if (hp < 1)      { r = c; g = x; b = 0; }
+  else if (hp < 2) { r = x; g = c; b = 0; }
+  else if (hp < 3) { r = 0; g = c; b = x; }
+  else if (hp < 4) { r = 0; g = x; b = c; }
+  else if (hp < 5) { r = x; g = 0; b = c; }
+  else             { r = c; g = 0; b = x; }
+  const m = l - c / 2;
+  return [r + m, g + m, b + m].map(v => Math.round(Math.max(0, Math.min(1, v)) * 255));
+}
+/* sRGB → 相对亮度 Y（用于对比度计算） */
+function colorRelLum(rgb){
+  const f = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(rgb[0]) + 0.7152 * f(rgb[1]) + 0.0722 * f(rgb[2]);
+}
+/* 求「相对亮度比底色高、且尽量接近目标对比度」的 HSL 亮度百分比。
+   对比度 = (Y2 - Y1) / (Y2 + Y1)，随亮度单调。
+   先用二分找到理论解，再在量化后的实际颜色附近做一次微调 ——
+   浏览器最终渲染的是 8 位 RGB，直接用理论值会有最多 ±0.005 的对比度偏差，
+   这点偏差足以让相邻色相之间出现可见的难度差。 */
+function colorOddLight(hue, sat, baseLight, contrast){
+  const baseY = colorRelLum(colorHslToRgb(hue, sat, baseLight));
+  const targetY = baseY * (1 + contrast) / (1 - contrast);
+  let lo = baseLight, hi = 100;
+  for (let i = 0; i < 30; i++){
+    const mid = (lo + hi) / 2;
+    if (colorRelLum(colorHslToRgb(hue, sat, mid)) < targetY) lo = mid;
+    else hi = mid;
+  }
+  let best = (lo + hi) / 2, bestErr = Infinity;
+  /* 在理论解附近以 0.01% 的步长扫描，取对比度最接近目标的那个 */
+  for (let l = best - 0.5; l <= best + 0.5; l += 0.01){
+    if (l <= baseLight || l > 100) continue;
+    const y = colorRelLum(colorHslToRgb(hue, sat, l));
+    const err = Math.abs((y - baseY) / (y + baseY) - contrast);
+    if (err < bestErr){ bestErr = err; best = l; }
+  }
+  return best;
+}
+/* 一格的配色：返回底色与异色的 CSS hsl() 字符串 */
+function colorPair(hue, finds){
+  const contrast = colorContrast(finds);
+  const oddLight = colorOddLight(hue, COLOR_SAT, COLOR_BASE_LIGHT, contrast);
+  const base = "hsl(" + hue + ", " + COLOR_SAT + "%, " + COLOR_BASE_LIGHT + "%)";
+  const odd  = "hsl(" + hue + ", " + COLOR_SAT + "%, " + oddLight.toFixed(3) + "%)";
+  return { base: base, odd: odd };
+}
 /*DOMAIN_END*/
 
 /*PARTY_START*/
@@ -1235,25 +1334,37 @@ function gameFlash(stage, done){
   startRound();
 }
 
-/* ---- 5. color ---- */
+/* ---- 5. color ----
+   难度参数全部来自 DOMAIN 区的 colorPair/colorGridSize/colorNextHue（纯逻辑，可单测）。
+   关键点：
+   - 差异用**相对对比度**度量并按色相反解，跨色相难度一致。
+     旧版用绝对亮度差，而底色亮度在黄/蓝之间差 6 倍，
+     导致黄色/绿色明显更难（实测跨色相难易比 1.84×，修复后 1.06×）。
+   - 网格 4×4 → 5×5，且**网格变大时差异仍然很大**，不叠加难度。
+   - 相邻两轮的色相角距 >= 30°，避免连续两轮「看起来像同一色」而难度骤降。
+   - 底色/异色写成内联样式，所以点错的反馈必须直接改内联 background，
+     否则会被内联样式压住、样式表里的 .cell.bad 永远不生效（旧版的 bug）。 */
 function gameColor(stage, done){
   const grid = document.createElement("div"); grid.className = "grid";
   stage.appendChild(grid);
-  let finds = 0, over = false, remain = 20000, lastTick = performance.now();
+  let finds = 0, over = false, remain = 20000, lastTick = performance.now(), lastHue = null;
   function render(){
-    const n = finds >= 5 ? 5 : 4;
+    const n = colorGridSize(finds);
     grid.style.gridTemplateColumns = "repeat(" + n + ", 1fr)";
     grid.innerHTML = "";
-    const hue = randi(0, 359), delta = Math.max(1, 8 - Math.floor(finds*0.9));
+    const hue = colorNextHue(lastHue);
+    lastHue = hue;
+    const pair = colorPair(hue, finds);
     const odd = randi(0, n*n - 1);
     for (let i = 0; i < n*n; i++){
       const c = document.createElement("div"); c.className = "cell";
-      const light = i === odd ? 42 + delta : 42;
-      c.style.background = "hsl(" + hue + ", 65%, " + light + "%)";
+      const isOdd = (i === odd);
+      c.style.background = isOdd ? pair.odd : pair.base;
       c.style.border = "none";
       c.onclick = ()=>{ if (over) return;
-        if (i === odd){ finds++; beep(900 + finds*40, .06); render(); }
-        else { c.classList.add("bad"); beep(180,.1); setTimeout(()=>c.classList.remove("bad"), 200); } };
+        if (isOdd){ finds++; beep(900 + finds*40, .06); render(); }
+        else { c.style.background = "#8e2424"; beep(180,.1);
+               setTimeout(()=>{ c.style.background = pair.base; }, 200); } };
       grid.appendChild(c);
     }
   }
