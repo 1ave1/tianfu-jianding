@@ -859,6 +859,13 @@ function gameAnagram(stage, done){
   const built = document.createElement("div"); built.id = "builtWord";
   const tiles = document.createElement("div"); tiles.className = "tiles";
   stage.appendChild(built); stage.appendChild(tiles);
+  /* ===== 判分参数 =====
+     速度分规则：3轮共18个字，门槛时间 = 0.5秒/字 × 18 = 9秒。
+     用时在门槛内不扣分（满分可达成），超出后每秒扣1.5分，扣得较狠。 */
+  const CHARS_TOTAL = 18;        /* 5 + 6 + 7 字 */
+  const TIME_GATE = CHARS_TOTAL * 0.5;  /* 门槛时间 9 秒 */
+  const TIME_RATE = 1.5;         /* 超时后每秒扣分 */
+  const MISTAKE_COST = 6;        /* 每次点错扣分 */
   let round = 0, mistakes = 0; const startAt = performance.now();
   let word = "", progress = 0;
   function startRound(){ tapGuard(stage);
@@ -872,7 +879,8 @@ function gameAnagram(stage, done){
         if (ch === word[progress]){ t.classList.add("used"); progress++; built.textContent = word.slice(0, progress); beep(760,.05,0,"sine",.07);
           if (progress >= word.length){ jingle(true);
             T(()=>{ if (round >= 3){ const sec = (performance.now()-startAt)/1000;
-              done(clamp(Math.round(100 - sec*1.1 - mistakes*6), 5, 100), "重排 " + Math.round(sec) + "秒・失误" + mistakes);
+              const timePen = Math.max(0, sec - TIME_GATE) * TIME_RATE;
+              done(clamp(Math.round(100 - timePen - mistakes*MISTAKE_COST), 5, 100), "重排 " + Math.round(sec) + "秒・失误" + mistakes);
             } else startRound(); }, 600); }
         } else { mistakes++; beep(180,.1); }
       };
@@ -1000,12 +1008,15 @@ function gameTrace(stage, done){
     for (let a = 0; a <= Math.PI*4.6; a += 0.22){ const r = 8 + a*9.2; pts.push([cx + Math.cos(a)*r, cy + Math.sin(a)*r*0.82]); } return pts; }
   function genWave(){ const pts = []; for (let x = 20; x <= 320; x += 10) pts.push([x, Math.round(130 + Math.sin(x/38)*72)]); return pts; }
   function genLoop(){ const pts = []; for (let a = 0; a <= Math.PI*3.2; a += 0.25){ const r = 80 - a*4.5; pts.push([170 + Math.cos(a)*r, 130 + Math.sin(a)*r*0.8]); } return pts; }
-  /* ===== 时间维度参数 ===== */
-  const TARGET_SPEED = 60;   /* 目标描摹速度 px/s：以此速度描完得速度分 66 */
-  const SPEED_LENIENT = 1.3; /* 螺旋曲率大、难控制，时间基准放宽 30% */
+  /* ===== 时间维度参数 =====
+     速度分规则：达到门槛速度即拿满，不惩罚「快」；
+     慢于门槛则线性递减，到归零线归零（防止一个点一个点慢慢磨） */
+  const GATE_SPEED = 80;   /* 门槛速度 px/s：描摹速度达到此值即拿满速度分 */
+  const FLOOR_MULT = 2;    /* 归零线 = 门槛用时 × 2，此时速度分归零 */
+  const SPEED_LENIENT = 1.3; /* 螺旋曲率大、难控制，时间门槛放宽 30% */
   const W_COVER = 40, W_ACC = 30, W_SPEED = 30;
   let round = 0, roundScores = [], roundInfo = [], drawn = [], drawing = false, path = [], dense = [];
-  let bench = 0, t0 = 0;
+  let bench = 0, gate = 0, floor = 0, t0 = 0;
   function densePath(p){ const out = []; for (let i = 1; i < p.length; i++){ const x1 = p[i-1][0], y1 = p[i-1][1], x2 = p[i][0], y2 = p[i][1];
       const d = Math.hypot(x2-x1, y2-y1), steps = Math.max(1, Math.round(d/6));
       for (let s = 0; s < steps; s++) out.push([x1 + (x2-x1)*s/steps, y1 + (y2-y1)*s/steps]); }
@@ -1037,8 +1048,11 @@ function gameTrace(stage, done){
       else if (kind === "wave") path = genWave();
       else path = genLoop(); }
     dense = densePath(path);
-    /* 时间基准 = 路径长度 ÷ 目标速度；螺旋额外放宽 */
-    bench = pathLen(path) / TARGET_SPEED * (spiral ? SPEED_LENIENT : 1);
+    /* 时间门槛：达到 GATE_SPEED 即拿满速度分；归零线为门槛用时的 FLOOR_MULT 倍。
+       按路径长度归一化，保证各题型的门槛手速一致。 */
+    gate = pathLen(path) / GATE_SPEED * (spiral ? SPEED_LENIENT : 1);
+    floor = gate * FLOOR_MULT;
+    bench = gate;
     msg.textContent = "";
     redraw();
   }
@@ -1057,13 +1071,14 @@ function gameTrace(stage, done){
       const eff = clamp(coverage / 0.5, 0, 1);
       coverScore = coverage * W_COVER;                                        /* 完成度 40 分 */
       accScore = clamp(50 - avgDev*1.4, 0, 45) / 45 * W_ACC * eff;            /* 准确度 30 分 */
-      /* 速度 30 分：基准速度(60px/s)得 66 分，需 2 倍于基准线得满分；
-         超过 2 倍基准时间(≈30px/s)视为超时，速度分归零（软惩罚，可继续描摹） */
-      speedScore = clamp((bench*2 - elapsed) / (bench*1.5) * 100, 0, 100) * (W_SPEED/100) * eff;
+      /* 速度 30 分：用时 <= 门槛用时(gate) 即拿满 30 分，画多快都不扣分；
+         慢于门槛则从 30 分线性递减，到归零线(floor)归零（防止磨洋工） */
+      speedScore = elapsed <= gate ? 100
+                 : elapsed >= floor ? 0
+                 : (floor - elapsed) / (floor - gate) * 100;
+      speedScore = clamp(speedScore, 0, 100) * (W_SPEED/100) * eff;
       score = clamp(Math.round(coverScore + accScore + speedScore), 5, 100);
-      const over = elapsed > bench*2;
-      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b>'
-        + (over ? '<br><span style="font-size:13px;color:#9fd8ff;">超时，速度分归零</span>' : '');
+      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b>';
     }
     roundScores.push(score);
     roundInfo.push({ score:score, elapsed:elapsed, bench:bench });
