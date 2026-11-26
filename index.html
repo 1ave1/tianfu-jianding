@@ -1014,7 +1014,14 @@ function gameTrace(stage, done){
   const GATE_SPEED = 80;   /* 门槛速度 px/s：描摹速度达到此值即拿满速度分 */
   const FLOOR_MULT = 2;    /* 归零线 = 门槛用时 × 2，此时速度分归零 */
   const SPEED_LENIENT = 1.3; /* 螺旋曲率大、难控制，时间门槛放宽 30% */
-  const W_COVER = 40, W_ACC = 30, W_SPEED = 30;
+  /* 三项权重：完成度 30 / 准确度 45 / 速度 25 —— 侧重「画得准不准」 */
+  const W_COVER = 30, W_ACC = 45, W_SPEED = 25;
+  /* 准确度容差：偏离在 ACC_TOL(px) 以内视为满分（容忍手指自然抖动），
+     超过后线性衰减，到 ACC_ZERO(px) 归零。
+     判定用「90分位」而非平均值：允许 10% 的点离群（起笔收笔的自然失误），
+     但能抓住「系统性画偏」和「局部大偏」，避免平均值把严重偏差稀释掉。 */
+  const ACC_TOL = 3, ACC_ZERO = 8;
+  const ACC_Q = 0.90;   /* 分位数：容忍 10% 的离群点 */
   let round = 0, roundScores = [], roundInfo = [], drawn = [], drawing = false, path = [], dense = [];
   let bench = 0, gate = 0, floor = 0, t0 = 0;
   function densePath(p){ const out = []; for (let i = 1; i < p.length; i++){ const x1 = p[i-1][0], y1 = p[i-1][1], x2 = p[i][0], y2 = p[i][1];
@@ -1063,22 +1070,45 @@ function gameTrace(stage, done){
     if (drawn.length > 3 && t0){
       let devSum = 0; drawn.forEach(p=>{ devSum += distToPath(p[0],p[1]); });
       const avgDev = devSum/drawn.length;
+      /* 90分位偏离：取最贴合的 90% 的点之外的那个值作为代表偏离，
+         容忍 10% 的离群点，但整体偏移会被如实反映 */
+      const devs = drawn.map(p=>distToPath(p[0],p[1])).sort((a,b)=>a-b);
+      const p90Dev = devs[Math.min(devs.length-1, Math.floor(devs.length * ACC_Q))];
       let covered = 0;
       dense.forEach(sp=>{ let m = 1e9; drawn.forEach(dp=>{ const d = Math.hypot(sp[0]-dp[0], sp[1]-dp[1]); if (d < m) m = d; }); if (m <= 12) covered++; });
       const coverage = covered/dense.length;
       /* 有效系数：完成度达到 50% 才算「认真在描」，否则准确度与速度分不予计
          （防止只点几个点却白拿准确度/速度分） */
       const eff = clamp(coverage / 0.5, 0, 1);
-      coverScore = coverage * W_COVER;                                        /* 完成度 40 分 */
-      accScore = clamp(50 - avgDev*1.4, 0, 45) / 45 * W_ACC * eff;            /* 准确度 30 分 */
-      /* 速度 30 分：用时 <= 门槛用时(gate) 即拿满 30 分，画多快都不扣分；
-         慢于门槛则从 30 分线性递减，到归零线(floor)归零（防止磨洋工） */
+      coverScore = coverage * W_COVER;                                        /* 完成度 30 分 */
+      /* 准确度 45 分：用 90分位偏离 判定，
+         <= ACC_TOL(3px) 拿满分，3px~ACC_ZERO(8px) 之间线性衰减，8px 以上归零 */
+      const accDev = p90Dev;
+      const accRaw = accDev <= ACC_TOL ? W_ACC
+                    : accDev >= ACC_ZERO ? 0
+                    : (ACC_ZERO - accDev) / (ACC_ZERO - ACC_TOL) * W_ACC;
+      accScore = accRaw * eff;
+      /* 速度 25 分：用时 <= 门槛用时(gate) 即拿满 25 分，画多快都不扣分；
+         慢于门槛则从 25 分线性递减，到归零线(floor)归零（防止磨洋工） */
       speedScore = elapsed <= gate ? 100
                  : elapsed >= floor ? 0
                  : (floor - elapsed) / (floor - gate) * 100;
       speedScore = clamp(speedScore, 0, 100) * (W_SPEED/100) * eff;
       score = clamp(Math.round(coverScore + accScore + speedScore), 5, 100);
-      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b>';
+      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b>'
+        + ' <span id="__dbg" style="opacity:.5;font-size:12px">C' + coverScore.toFixed(1)
+        + ' A' + accScore.toFixed(1) + ' S' + speedScore.toFixed(1)
+        + ' | p90 ' + p90Dev.toFixed(2) + 'px (avg ' + avgDev.toFixed(2) + ')</span>';
+      /* 调试日志：每轮把原始指标记到 window.__traceLog，便于调参分析 */
+      (window.__traceLog = window.__traceLog || []).push({
+        round: round, score: score,
+        cover: +coverScore.toFixed(2), acc: +accScore.toFixed(2), speed: +speedScore.toFixed(2),
+        p90: +p90Dev.toFixed(2), avg: +avgDev.toFixed(2),
+        max: +devs[devs.length-1].toFixed(2), min: +devs[0].toFixed(2),
+        coverage: +(coverage*100).toFixed(1), eff: +eff.toFixed(2),
+        elapsed: +elapsed.toFixed(2), gate: +gate.toFixed(2),
+        pts: drawn.length, kind: path.length
+      });
     }
     roundScores.push(score);
     roundInfo.push({ score:score, elapsed:elapsed, bench:bench });
