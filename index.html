@@ -36,7 +36,56 @@
   .btn.sub{ background:rgba(255,255,255,.10); color:#cfeaff; box-shadow:none; border:2px solid rgba(159,216,255,.5); font-size:15px; }
   .btn.blue{ background:linear-gradient(180deg,#4fc3f7,#0288d1); color:#fff; box-shadow:0 4px 0 #01579b; }
   .note{ font-size:12px; color:#8fb8d8; text-align:center; margin-top:12px; line-height:1.7; }
-  #bestBox{ text-align:center; margin-top:14px; font-size:13px; color:#ffe082; min-height:18px; }
+  /* ===== 冒险小队 ===== */
+  #slotHint{ text-align:center; margin-top:10px; font-size:12.5px; color:#8fb8d8; min-height:18px; line-height:1.7; }
+  #slotHint.warn{ color:#ffb74d; }
+  #partyList{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+  .slot-row{ display:flex; gap:10px; align-items:center; background:rgba(255,255,255,.05); border:2px solid rgba(159,216,255,.30); border-radius:10px; padding:9px 10px; }
+  .slot-row.empty{ border-style:dashed; opacity:.75; }
+  .slot-no{ flex:0 0 auto; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; background:rgba(79,195,247,.20); color:#9fd8ff; border:1px solid rgba(159,216,255,.45); }
+  .slot-main{ flex:1 1 auto; min-width:0; }
+  .slot-name{ font-size:15px; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .slot-name .empty-tag{ color:#8fb8d8; font-weight:700; }
+  .slot-meta{ font-size:12px; color:#9fd8ff; margin-top:2px; line-height:1.55; }
+  .slot-meta .title{ color:#ffe082; }
+  .slot-acts{ flex:0 0 auto; display:flex; flex-direction:column; gap:4px; }
+  .slot-acts button{ font-size:11.5px; font-weight:700; padding:5px 9px; border-radius:7px; border:1px solid rgba(159,216,255,.5); background:rgba(255,255,255,.08); color:#cfeaff; cursor:pointer; white-space:nowrap; }
+  .slot-acts button:disabled{ opacity:.35; cursor:not-allowed; }
+  .slot-acts button.danger{ border-color:rgba(239,154,154,.55); color:#ef9a9a; }
+  .party-tools{ display:flex; gap:8px; margin-top:14px; }
+  .party-tools .btn{ flex:1; font-size:14px; padding:11px; margin-top:0; }
+  #shareOut{ margin-top:12px; }
+  #shareOut textarea{ width:100%; height:74px; font-size:12px; font-family:ui-monospace,Menlo,Consolas,monospace; padding:9px; border-radius:8px; border:2px solid #6ec6ff; background:rgba(255,255,255,.08); color:#ffe082; resize:none; word-break:break-all; }
+  #shareIn{ margin-top:12px; }
+  #shareIn input{ width:100%; font-size:13px; padding:10px; border-radius:8px; border:2px solid #6ec6ff; background:rgba(255,255,255,.08); color:#fff; outline:none; font-family:ui-monospace,Menlo,Consolas,monospace; }
+  #shareMsg{ font-size:12.5px; margin-top:8px; line-height:1.7; min-height:18px; }
+  #shareMsg.err{ color:#ef9a9a; }
+  #shareMsg.ok{ color:#a5d6a7; }
+  /* 导入选槽弹窗 */
+  #importPick{ margin-top:12px; border-top:1px solid rgba(159,216,255,.35); padding-top:12px; }
+  #importPick .pick-title{ font-size:12px; color:#9fd8ff; margin-bottom:7px; letter-spacing:.1em; }
+  .pick-row{ display:flex; align-items:center; gap:9px; background:rgba(255,255,255,.05); border:2px solid rgba(159,216,255,.30); border-radius:9px; padding:7px 9px; margin-bottom:6px; }
+  .pick-row .pick-no{ flex:0 0 auto; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; background:rgba(79,195,247,.20); color:#9fd8ff; }
+  .pick-row .pick-info{ flex:1 1 auto; min-width:0; font-size:13px; color:#cfeaff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pick-row button{ flex:0 0 auto; font-size:12px; font-weight:700; padding:5px 10px; border-radius:7px; border:1px solid #6ec6ff; background:rgba(79,195,247,.18); color:#fff; cursor:pointer; }
+  /* 全屏提醒框（槽位已满等） */
+  #alertOverlay{ position:fixed; inset:0; background:rgba(0,0,0,.82); z-index:95; display:none; align-items:center; justify-content:center; padding:24px; }
+  #alertOverlay.show{ display:flex; }
+  #alertBox{ background:linear-gradient(170deg,rgba(14,22,56,.98),rgba(8,10,30,.98)); border:2px solid #7c8cff; border-radius:14px; padding:20px 18px; max-width:380px; width:100%; box-shadow:0 0 0 4px rgba(124,140,255,.12),0 0 24px rgba(142,36,170,.3); }
+  #alertTitle{ font-weight:900; font-size:17px; color:#ffd54f; letter-spacing:.1em; text-align:center; margin-bottom:10px; }
+  #alertText{ font-size:13.5px; color:#cfeaff; line-height:1.85; margin-bottom:16px; }
+  #alertBtns .btn{ width:100%; margin-top:8px; font-size:15px; padding:12px; }
+  /* 作战会议：全队一览 */
+  #biTeam{ display:flex; flex-direction:column; gap:7px; margin-top:6px; }
+  .bi-mem{ background:rgba(255,255,255,.05); border:1px solid rgba(124,140,255,.30); border-radius:9px; padding:8px 10px; }
+  .bi-mem.pc{ border-color:rgba(159,216,255,.22); opacity:.9; }
+  .bi-mem .m-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-weight:900; font-size:14px; }
+  .bi-mem .m-top .who{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bi-mem .m-top .tag{ font-size:10px; font-weight:700; padding:1px 6px; border-radius:5px; white-space:nowrap; }
+  .bi-mem .m-top .tag.pc{ background:rgba(159,216,255,.18); color:#9fd8ff; }
+  .bi-mem .m-top .tag.human{ background:rgba(255,213,79,.20); color:#ffd54f; }
+  .bi-mem .m-meta{ font-size:11.5px; color:#9fd8ff; margin-top:3px; line-height:1.6; }
+  .bi-mem .m-skills{ font-size:11.5px; color:#cfeaff; margin-top:3px; line-height:1.6; }
   /* game screen */
   #hud{ display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#9fd8ff; margin-top:4px; }
   #hudGame{ font-weight:900; color:#fff; font-size:15px; }
@@ -302,6 +351,8 @@
   #dqParty .pw-line{ display:flex; justify-content:space-between; font-size:12px; }
   #dqParty .pw-job{ font-size:10px; color:#ffe082; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   #dqParty .pwin.leader{ border-color:#ffd54f; }
+  #dqParty .pwin.npc{ opacity:.9; border-style:dashed; }
+  #dqParty .pc-tag{ font-size:8.5px; font-weight:700; color:#9fd8ff; border:1px solid rgba(159,216,255,.5); border-radius:3px; padding:0 3px; vertical-align:middle; margin-left:2px; }
   #dqParty .pwin.dead{ opacity:.45; }
   #dqParty .pwin.low .pw-hp{ color:#ff8a80; }
   #dqParty .pwin.guard{ border-color:#80d8ff; }
@@ -335,7 +386,8 @@
     <label class="lbl" for="nameInput">名字（将显示在能力表上）</label>
     <input id="nameInput" type="text" maxlength="10" placeholder="无名转生者">
     <button class="btn" id="btnStart">开始鉴定</button>
-    <div id="bestBox"></div>
+    <div id="slotHint"></div>
+    <button class="btn blue" id="btnParty">冒险小队</button>
     <p class="note">每个游戏10〜20秒，16个游戏共约5〜6分钟。<br>所有判定均为实测，不使用随机数。</p>
   </div>
   <div class="win" style="margin-top:14px;">
@@ -344,6 +396,38 @@
     <div id="singleList"></div>
   </div>
   <p class="credit">中文本地化改编自 <a href="https://red-freegames.github.io/sainou-sagashi/" target="_blank" rel="noopener">才能探し</a><br>原作者 red-freegames ・ 本地化 <a href="https://github.com/1ave1/tianfu-jianding" target="_blank" rel="noopener">1ave1/tianfu-jianding</a></p>
+</section>
+
+<!-- ===== 冒险小队 ===== -->
+<section id="scr-party" class="screen">
+  <h2 class="st-title-label" style="text-align:center; letter-spacing:.2em;">冒险小队</h2>
+  <p class="st-title" style="font-size:20px;">4人队伍</p>
+  <div class="win" style="margin-top:14px;">
+    <div class="win-head">― 小队成员 ―</div>
+    <div id="partyList"></div>
+    <div class="party-tools">
+      <button class="btn sub" id="btnPartyClear">清空全部</button>
+      <button class="btn blue" id="btnPartyBack">返回</button>
+    </div>
+    <div id="partyBossArea" style="margin-top:12px;">
+      <button class="btn" id="btnPartyBoss" style="display:none;background:linear-gradient(180deg,#ff8a65,#ff5722);color:#fff;box-shadow:0 4px 0 #b23c17;text-shadow:0 1px 2px rgba(0,0,0,.35);">⚔ 挑战魔王</button>
+      <p class="note" id="partyBossLock" style="display:none;text-align:center;"></p>
+    </div>
+  </div>
+  <div class="win" style="margin-top:14px;">
+    <div class="win-head">― 导入 / 导出 ―</div>
+    <p class="note" style="margin-top:0;">把自己的角色导出成「角色码」发给朋友，朋友导入后即可加入小队。</p>
+    <div id="shareIn">
+      <input id="shareInput" type="text" placeholder="粘贴角色码（以 TQ1- 开头）" autocomplete="off">
+      <button class="btn blue" id="btnShareImport" style="font-size:15px; padding:11px; margin-top:9px;">导入角色码</button>
+      <div id="shareMsg"></div>
+      <div id="importPick"></div>
+    </div>
+    <div id="shareOut" style="display:none;">
+      <div class="note" style="margin-top:0; text-align:left;">这个角色的角色码（已复制到剪贴板）：</div>
+      <textarea id="shareText" readonly></textarea>
+    </div>
+  </div>
 </section>
 
 <!-- ===== GAME ===== -->
@@ -402,12 +486,14 @@
     <div class="bi-hero"><div><b id="biName"></b><small id="biJob"></small></div><div style="text-align:right;font-size:12px;color:#9fd8ff;">HP <b id="biHp" style="font-size:18px;color:#fff;"></b></div></div>
     <div class="bt-sec">敌人：魔王·无知</div>
     <div class="bi-boss">不断从人类身上吸取「灵感」的异世界魔王。<b>战斗分3形态</b>。<br>魔王会<b>每回合预告下一次行动</b>。读懂预告后，选择进攻还是防守。<br>每次HP跌破 66% 与 33% 时都会变身，使用更危险的招式。</div>
-    <div class="bt-sec">指令</div>
+    <div class="bt-sec">小队成员</div>
+    <div id="biTeam"></div>
+    <div class="bt-sec">小队成员的技能（消耗MP）</div>
     <div class="bi-list" id="biSkills"></div>
-    <div class="bt-sec">技能（消耗MP。共2种）</div>
+    <div class="bt-sec">指令说明</div>
     <div class="bi-list" id="biUlt"></div>
     <div class="bt-sec">提示</div>
-    <ul class="bi-howto"><li><b>每回合1个指令</b>。3名同伴会自动战斗。</li><li>当魔王显示「<b>正在蓄力</b>」时，下回合就是大招！用<b>防御</b>、回复或控制类技能做好准备。</li><li>HP跌破一半后，魔王<b>每回合行动2次</b>。</li></ul>
+    <ul class="bi-howto"><li><b>每回合每人1个指令</b>。玩家角色依次下令，电脑同伴自动战斗。</li><li>当魔王显示「<b>正在蓄力</b>」时，下回合就是大招！用<b>防御</b>、回复或控制类技能做好准备。</li><li>HP跌破一半后，魔王<b>每回合行动2次</b>。</li><li><b>全队都倒下</b>才算失败。</li></ul>
     <div class="bt-sec">难度</div>
     <div class="bi-diff"><button id="biDn" class="on">普通<small>魔王·无知</small></button><button id="biDh">真·魔王<small id="biDhS">通关后解锁</small></button></div>
     <button class="btn" id="btnBiGo" style="margin-top:14px;background:linear-gradient(180deg,#ff8a65,#ff5722);color:#fff;box-shadow:0 4px 0 #b23c17;text-shadow:0 1px 2px rgba(0,0,0,.35);">⚔ 出阵</button>
@@ -490,15 +576,24 @@
     <button class="btn sub" id="btnManifestWait">暂不挑战</button>
   </div>
 </div>
+<div id="alertOverlay">
+  <div id="alertBox">
+    <div id="alertTitle"></div>
+    <div id="alertText"></div>
+    <div id="alertBtns"></div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
+/*UTIL_START*/
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const rand = (a,b)=>a+Math.random()*(b-a);
 const randi = (a,b)=>Math.floor(rand(a,b+1));
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+/*UTIL_END*/
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); $(id).classList.add("active"); window.scrollTo(0,0); } function readyThenBegin(gate, begin){ if (gate._go) return; gate._go = 1; gate.onpointerdown = null; gate.innerHTML = '<div style="font-size:30px;font-weight:900;color:#ffe082;">预备…</div>'; setTimeout(begin, 700); } function tapGuard(stage){ const g = document.createElement("div"); g.style.cssText = "position:absolute;inset:0;z-index:50;background:transparent;"; stage.style.position = "relative"; stage.appendChild(g); setTimeout(()=>g.remove(), 450); } function tapNext(stage, cb){ const b = document.createElement("button"); b.className = "btn"; b.textContent = "点击进入下一关 ▶"; b.style.cssText = "margin-top:14px"; let ready = false; stage.appendChild(b); try{ b.scrollIntoView({block:"nearest"}); }catch(e){} setTimeout(()=>{ ready = true; }, 120); b.onclick = ()=>{ if (!ready) return; b.remove(); cb(); }; } document.addEventListener("click", e=>{ const a = e.target.closest && e.target.closest("a[data-home]"); if (!a) return; const act = document.querySelector(".screen.active"); if (act && (act.id === "scr-game" || act.id === "scr-boss") && !confirm("要返回标题画面吗？\n当前进度将会丢失")) e.preventDefault(); }); function fitText(el){ el.style.fontSize = ""; el.style.whiteSpace = "nowrap"; let fs = parseFloat(getComputedStyle(el).fontSize) || 52; while (el.scrollWidth > el.clientWidth && fs > 18){ fs -= 2; el.style.fontSize = fs + "px"; } }
 
@@ -517,6 +612,7 @@ function beep(freq, dur, delay, type, vol){
 }
 function jingle(good){ if(good){ beep(880,.12,0); beep(1320,.18,.1); } else { beep(220,.15,0); beep(160,.2,.12); } }
 
+/*DOMAIN_START*/
 /* ---------- data ---------- */
 const PARAMS = [
   { key:"reflex",  name:"反射" },
@@ -620,6 +716,356 @@ function judgeJob(P){
   JOB_DEFS.forEach(j=>{ const s = jobScore(P, j); if (s > bestScore){ bestScore = s; best = j; } });
   return { name: best.name, main: best.main };
 }
+/* 等级 = 15 项才能的平均值（四舍五入）—— 名册、战斗、分享码共用同一算法 */
+function levelOf(P){
+  return Math.round(PARAMS.reduce((a,p)=>a+P[p.key],0)/PARAMS.length);
+}
+/*DOMAIN_END*/
+
+/*PARTY_START*/
+/* ================= 冒险小队：名册存储 + 分享码 =================
+   名册只存「名字 + 15 项才能分数」；职业/等级/称号一律现算，保证三条路径
+   （名册显示 / 战斗数值 / 分享码导入）永远产出同一套结果。
+   所有函数都接收 storage 对象，因此不依赖 localStorage，可直接单测。 */
+const PARTY_SLOTS = 4;
+const PARTY_KEY = "sainou_party";
+const LAST_KEY = "sainou_last";
+const SHARE_PREFIX = "TQ1-";
+/* 旧版「上次鉴定」的存储键 —— 展示已整条移除，这里只负责把残留数据清掉 */
+const LEGACY_KEY = "sainou_best";
+
+/* 把任意来源的分数规整成 15 项合法数值 */
+function normScores(P){
+  const out = {};
+  for (const p of PARAMS){
+    const v = P ? Number(P[p.key]) : NaN;
+    out[p.key] = Number.isFinite(v) ? clamp(Math.round(v), 0, 100) : 0;
+  }
+  return out;
+}
+function isValidSlot(s){
+  return !!s && typeof s === "object" && typeof s.name === "string" && s.name.length > 0
+      && !!s.P && typeof s.P === "object";
+}
+function emptyParty(){ return { v:1, slots:[null, null, null, null] }; }
+
+/* 读取名册；数据损坏时退回空名册，绝不让坏数据流到战斗里 */
+function readParty(storage){
+  try{
+    const raw = storage.getItem(PARTY_KEY);
+    if (!raw) return emptyParty();
+    const o = JSON.parse(raw);
+    if (!o || !Array.isArray(o.slots)) return emptyParty();
+    const slots = [];
+    for (let i=0; i<PARTY_SLOTS; i++){
+      const s = o.slots[i];
+      slots.push(isValidSlot(s) ? { name:s.name, P:normScores(s.P) } : null);
+    }
+    return { v:1, slots:slots };
+  }catch(e){ return emptyParty(); }
+}
+function writeParty(storage, party){
+  const p = { v:1, slots:[] };
+  for (let i=0; i<PARTY_SLOTS; i++){
+    const s = party.slots[i];
+    p.slots.push(isValidSlot(s) ? { name:s.name, P:normScores(s.P) } : null);
+  }
+  try{ storage.setItem(PARTY_KEY, JSON.stringify(p)); }catch(e){}
+  return p;
+}
+
+/* 槽位操作：全部返回新对象，不修改入参 */
+function partySetSlot(party, idx, slot){
+  const p = { v:1, slots:party.slots.slice() };
+  p.slots[idx] = (slot && typeof slot.name === "string" && slot.name.length)
+    ? { name:slot.name, P:normScores(slot.P) } : null;
+  return p;
+}
+function partyClearSlot(party, idx){ return partySetSlot(party, idx, null); }
+function partyClearAll(){ return emptyParty(); }
+function partyFirstEmpty(party){
+  for (let i=0; i<PARTY_SLOTS; i++) if (!party.slots[i]) return i;
+  return -1;
+}
+function partyCount(party){
+  let n = 0;
+  for (let i=0; i<PARTY_SLOTS; i++) if (party.slots[i]) n++;
+  return n;
+}
+/* 队伍中玩家角色的最高等级 —— 讨伐魔王的门槛只看它。
+   slots 为名册的 4 个槽位：已填的槽位就是玩家角色，空槽位是电脑 NPC（不参与门槛）。
+   结果页、小队页、作战会议共用这一个算法，避免各算各的。 */
+function partyMaxPlayerLv(slots){
+  let mx = 0;
+  for (let i=0; i<PARTY_SLOTS; i++){
+    const s = slots ? slots[i] : null;
+    if (!s) continue;
+    const lv = levelOf(normScores(s.P));
+    if (lv > mx) mx = lv;
+  }
+  return mx;
+}
+/* 清掉旧版「上次鉴定」的残留数据（该条目已整条移除） */
+function purgeLegacyBest(storage){
+  try{ storage.removeItem(LEGACY_KEY); }catch(e){}
+}
+
+/* 槽位的现算信息：职业 / 等级 / 称号 / 才能技能 */
+function slotInfo(slot){
+  if (!isValidSlot(slot)) return null;
+  const job = judgeJob(slot.P);
+  return {
+    name: slot.name,
+    P: slot.P,
+    job: job.name,
+    lv: levelOf(slot.P),
+    title: judgeTitle(slot.P),
+    skillKey: topKeyOf(slot.P)
+  };
+}
+
+/* 最近一次鉴定结果 */
+function readLast(storage){
+  try{
+    const o = JSON.parse(storage.getItem(LAST_KEY) || "null");
+    if (!o || typeof o.name !== "string" || !o.name || !o.P) return null;
+    return { name:o.name, P:normScores(o.P) };
+  }catch(e){ return null; }
+}
+function writeLast(storage, name, P){
+  const rec = { name:(name && String(name).trim()) || "无名转生者", P:normScores(P) };
+  try{ storage.setItem(LAST_KEY, JSON.stringify(rec)); }catch(e){}
+  return rec;
+}
+
+/* ---------- 分享码 ---------- */
+function b64urlEncode(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  for (let i=0; i<bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function b64urlDecode(code){
+  let s = String(code).replace(/-/g,"+").replace(/_/g,"/");
+  while (s.length % 4) s += "=";
+  const bin = atob(s);
+  const bytes = new Uint8Array(bin.length);
+  for (let i=0; i<bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function encodeShare(slot){
+  if (!isValidSlot(slot)) return "";
+  const payload = { v:1, name:slot.name, P:normScores(slot.P) };
+  return SHARE_PREFIX + b64urlEncode(JSON.stringify(payload));
+}
+/* 导入校验：任何一步失败都返回明确的中文错误 */
+function decodeShare(code){
+  const raw = String(code == null ? "" : code).trim();
+  if (!raw) return { ok:false, error:"请输入角色码" };
+  if (raw.indexOf(SHARE_PREFIX) !== 0) return { ok:false, error:"角色码格式不对（应以 TQ1- 开头）" };
+  let obj;
+  try{ obj = JSON.parse(b64urlDecode(raw.slice(SHARE_PREFIX.length))); }
+  catch(e){ return { ok:false, error:"角色码已损坏，无法解码" }; }
+  if (!obj || obj.v !== 1) return { ok:false, error:"角色码版本不兼容" };
+  if (typeof obj.name !== "string" || !obj.name) return { ok:false, error:"角色码缺少名字" };
+  if (!obj.P || typeof obj.P !== "object") return { ok:false, error:"角色码缺少能力分数" };
+  for (const p of PARAMS){
+    if (!Number.isFinite(Number(obj.P[p.key]))) return { ok:false, error:"角色码缺少「" + p.name + "」的分数" };
+  }
+  return { ok:true, slot:{ name:obj.name, P:normScores(obj.P) } };
+}
+/*PARTY_END*/
+
+/*PARTY_UI_START*/
+/* 战斗用的槽位：直接取名册（槽位1=队长位，槽位号即位置） */
+function currentSlots(){ return loadParty().slots; }
+
+/* ================= 冒险小队：界面逻辑 ================= */
+/* 存储访问统一走这里，便于在无 localStorage 环境下退化 */
+function store(){ try{ return localStorage; }catch(e){ return null; } }
+function loadParty(){ const s = store(); return s ? readParty(s) : emptyParty(); }
+function saveParty(party){ const s = store(); return s ? writeParty(s, party) : party; }
+function loadLast(){ const s = store(); return s ? readLast(s) : null; }
+function saveLast(name, P){ const s = store(); return s ? writeLast(s, name, P) : null; }
+
+/* 本次鉴定要写入的槽位；null = 尚未开始 */
+let pendingSlot = null;
+/* 放弃本次鉴定：释放预留的槽位（目标槽位回到空槽） */
+function releasePendingSlot(){ pendingSlot = null; }
+
+/* 刷新标题页上的槽位提示 */
+function refreshSlotHint(){
+  const box = $("slotHint"); if (!box) return;
+  const party = loadParty();
+  const idx = partyFirstEmpty(party);
+  const n = partyCount(party);
+  if (idx < 0){
+    box.textContent = "小队的 4 个槽位都已占满。开始鉴定将覆盖 槽位1。";
+    box.classList.add("warn");
+  } else {
+    box.textContent = "本次鉴定结果将记入 槽位" + (idx + 1) + "（已加入 " + n + " 人）。";
+    box.classList.remove("warn");
+  }
+}
+
+/* 全屏提醒框：buttons = [{label, cls, fn}]
+   注意：text 是 HTML 片段，调用方负责把不可信内容（角色名等）先经 bhtml 转义。 */
+function showAlert(title, text, buttons){
+  $("alertTitle").textContent = title;
+  $("alertText").innerHTML = text;
+  const box = $("alertBtns"); box.innerHTML = "";
+  (buttons || []).forEach(b => {
+    const el = document.createElement("button");
+    el.className = "btn " + (b.cls || "");
+    el.textContent = b.label;
+    el.onclick = ()=>{ hideAlert(); if (b.fn) b.fn(); };
+    box.appendChild(el);
+  });
+  $("alertOverlay").classList.add("show");
+}
+function hideAlert(){ $("alertOverlay").classList.remove("show"); }
+
+/* ---------- 小队页渲染 ---------- */
+function renderParty(){
+  const party = loadParty();
+  const last = loadLast();
+  const list = $("partyList"); list.innerHTML = "";
+  for (let i=0; i<PARTY_SLOTS; i++){
+    const s = party.slots[i];
+    const row = document.createElement("div");
+    row.className = "slot-row" + (s ? "" : " empty");
+    const info = s ? slotInfo(s) : null;
+    const no = document.createElement("div");
+    no.className = "slot-no"; no.textContent = String(i + 1);
+    const main = document.createElement("div");
+    main.className = "slot-main";
+    if (info){
+      main.innerHTML = '<div class="slot-name">' + bhtml(info.name) + '</div>' +
+        '<div class="slot-meta">【' + bhtml(info.job) + '】 Lv.' + info.lv +
+        '　<span class="title">『' + bhtml(info.title) + '』</span></div>';
+    } else {
+      main.innerHTML = '<div class="slot-name"><span class="empty-tag">空缺</span></div>' +
+        '<div class="slot-meta">尚未加入角色</div>';
+    }
+    const acts = document.createElement("div");
+    acts.className = "slot-acts";
+    /* 填入当前鉴定结果 */
+    const bFill = document.createElement("button");
+    bFill.textContent = "填入鉴定结果";
+    bFill.disabled = !last;
+    bFill.title = last ? "用最近一次鉴定结果填入此槽位" : "还没有鉴定结果";
+    bFill.onclick = ()=>{
+      const rec = loadLast(); if (!rec) return;
+      const p = loadParty();
+      saveParty(partySetSlot(p, i, { name:rec.name, P:rec.P }));
+      renderParty(); refreshSlotHint();
+      setShareMsg("已把「" + rec.name + "」填入 槽位" + (i + 1) + "。", "ok");
+    };
+    acts.appendChild(bFill);
+    /* 导出 */
+    const bExp = document.createElement("button");
+    bExp.textContent = "导出"; bExp.disabled = !s;
+    bExp.onclick = ()=>{
+      const code = encodeShare(party.slots[i]);
+      if (!code) return;
+      $("shareOut").style.display = "block";
+      $("shareText").value = code;
+      try{ navigator.clipboard && navigator.clipboard.writeText(code); }catch(e){}
+      setShareMsg("角色码已复制到剪贴板，也可以手动复制下面的文本。", "ok");
+      $("shareOut").scrollIntoView({ behavior:"smooth", block:"nearest" });
+    };
+    acts.appendChild(bExp);
+    /* 删除 */
+    const bDel = document.createElement("button");
+    bDel.className = "danger"; bDel.textContent = "删除"; bDel.disabled = !s;
+    bDel.onclick = ()=>{
+      const p = loadParty();
+      saveParty(partyClearSlot(p, i));
+      renderParty(); refreshSlotHint();
+      setShareMsg("已清空 槽位" + (i + 1) + "。", "ok");
+    };
+    acts.appendChild(bDel);
+    row.appendChild(no); row.appendChild(main); row.appendChild(acts);
+    list.appendChild(row);
+  }
+  refreshPartyBossArea();
+}
+function setShareMsg(text, kind){
+  const el = $("shareMsg");
+  el.textContent = text || "";
+  el.className = kind || "";
+}
+
+/* ---------- 导入 ---------- */
+function renderImportPick(slot){
+  const party = loadParty();
+  const box = $("importPick"); box.innerHTML = "";
+  const t = document.createElement("div");
+  t.className = "pick-title";
+  t.textContent = "选择要放入的槽位（将覆盖该槽位现有角色）：";
+  box.appendChild(t);
+  const info = slotInfo(slot);
+  for (let i=0; i<PARTY_SLOTS; i++){
+    const cur = party.slots[i];
+    const ci = cur ? slotInfo(cur) : null;
+    const row = document.createElement("div");
+    row.className = "pick-row";
+    row.innerHTML = '<div class="pick-no">' + (i + 1) + '</div>' +
+      '<div class="pick-info">' + (ci
+        ? bhtml(ci.name) + '　【' + bhtml(ci.job) + '】 Lv.' + ci.lv
+        : '<span style="color:#8fb8d8;">空缺</span>') + '</div>';
+    const b = document.createElement("button");
+    b.textContent = ci ? "覆盖" : "放入这里";
+    b.onclick = ()=>{
+      const p = loadParty();
+      saveParty(partySetSlot(p, i, slot));
+      box.innerHTML = "";
+      renderParty(); refreshSlotHint();
+      setShareMsg("已把「" + info.name + "」放入 槽位" + (i + 1) + "。", "ok");
+    };
+    row.appendChild(b);
+    box.appendChild(row);
+  }
+}
+function doImport(){
+  const raw = $("shareInput").value;
+  const res = decodeShare(raw);
+  if (!res.ok){ setShareMsg(res.error, "err"); $("importPick").innerHTML = ""; return; }
+  setShareMsg("角色码有效：「" + res.slot.name + "」。请选择要放入的槽位。", "ok");
+  renderImportPick(res.slot);
+}
+
+/* ---------- 入口与事件 ---------- */
+/* 刷新小队页上的魔王挑战入口（门槛同结果页：队伍最高玩家等级 ≥70） */
+function refreshPartyBossArea(){
+  const btn = $("btnPartyBoss"), lock = $("partyBossLock");
+  if (!btn) return;
+  const lv = partyMaxLv();
+  const won = btWon();
+  if (won){
+    btn.style.display = "block"; lock.style.display = "block";
+    lock.textContent = "👑 魔王已被讨伐。世界得救了！";
+    return;
+  }
+  if (lv >= 70){
+    btn.style.display = "block"; lock.style.display = "block";
+    lock.textContent = "队伍最高等级 Lv." + lv + "（需达到70）—— 可以挑战魔王了！";
+  } else {
+    btn.style.display = "none"; lock.style.display = "block";
+    lock.textContent = "队伍最高等级 Lv." + lv + "（需达到70）才能挑战魔王。";
+  }
+}
+function openParty(){
+  $("shareOut").style.display = "none";
+  $("shareIn").style.display = "block";
+  $("importPick").innerHTML = "";
+  $("shareInput").value = "";
+  setShareMsg("", "");
+  renderParty();
+  refreshPartyBossArea();
+  show("scr-party");
+}
+/*PARTY_UI_END*/
 
 /* ---------- state ---------- */
 const S = { name:"", scores:{}, details:{}, idx:0 };
@@ -1600,22 +2046,56 @@ function renderResult(){
   const topDetail = S.details[topKey] ? "（" + S.details[topKey] + "）" : "";
   $("stComment").textContent = "鉴定：" + PARAM_NAME[topKey] + "格外突出" + topDetail + "。另一方面，" + PARAM_NAME[worstKey] + "只有" + P[worstKey] + "分，这里就留作成长空间吧。职业判定为【" + job.name + "】。";
   show("scr-result");
-  try{
-    const prev = JSON.parse(localStorage.getItem("sainou_best") || "null");
-    if (!prev || lv > prev.lv) localStorage.setItem("sainou_best", JSON.stringify({ lv:lv, title:title }));
-  }catch(e){}
+  /* 保存最近一次鉴定结果（供小队页「填入鉴定结果」使用） */
+  saveLast(S.name || "无名转生者", P);
+  /* 写入本次鉴定预留的槽位 */
+  if (pendingSlot !== null){
+    const party = loadParty();
+    saveParty(partySetSlot(party, pendingSlot, { name:S.name || "无名转生者", P:P }));
+    pendingSlot = null;
+    refreshSlotHint();
+  }
   S.finalTitle = title; S.finalLv = lv;
   S.bossResult = null;
   refreshBossArea();
 }
-$("btnStart").onclick = ()=>{
+/* 开始鉴定：先决定结果要记入哪个槽位 */
+function requestStart(){
   ac();
   S.name = $("nameInput").value.trim();
+  const party = loadParty();
+  const idx = partyFirstEmpty(party);
+  if (idx >= 0){
+    pendingSlot = idx;
+    beginAppraisal();
+    return;
+  }
+  /* 4 槽全满 —— 明确提醒，让用户决定。
+     注意：只有在用户真的选择「覆盖槽位1」时才预留槽位，
+     否则点「去冒险小队」后会残留 pendingSlot，把下一次鉴定静默写进槽位1。 */
+  showAlert("槽位已满", "小队的 4 个槽位都已经有角色了。<br>现在开始鉴定，会覆盖 <b>槽位1</b> 里的「" +
+    bhtml(party.slots[0] ? party.slots[0].name : "角色") + "」。", [
+    { label:"去冒险小队", cls:"blue", fn:()=>{ openParty(); } },
+    { label:"仍要覆盖槽位1并开始", cls:"", fn:()=>{ pendingSlot = 0; beginAppraisal(); } },
+  ]);
+}
+function beginAppraisal(){
   S.scores = {}; S.details = {}; S.bossResult = null; S.manifestDone = false; S.manifestArmed = false;
   for (const k in catGames) delete catGames[k];
   startGame(0);
+}
+$("btnStart").onclick = ()=>{ requestStart(); };
+$("btnParty").onclick = ()=>{ ac(); openParty(); };
+$("btnPartyBack").onclick = ()=>{ releasePendingSlot(); show("scr-title"); refreshSlotHint(); };
+$("btnPartyBoss").onclick = ()=>{ ac(); btOrigin = "scr-party"; startBoss(); };
+$("btnPartyClear").onclick = ()=>{
+  showAlert("清空小队", "确定要清空全部 4 个槽位吗？<br>此操作无法撤销。", [
+    { label:"确定清空", cls:"", fn:()=>{ saveParty(partyClearAll()); renderParty(); refreshSlotHint(); setShareMsg("已清空小队。", "ok"); } },
+    { label:"取消", cls:"sub" },
+  ]);
 };
-$("btnRestart").onclick = ()=>{ show("scr-title"); refreshBest(); };
+$("btnShareImport").onclick = ()=>{ doImport(); };
+$("btnRestart").onclick = ()=>{ releasePendingSlot(); show("scr-title"); refreshSlotHint(); };
 
 /* ================= SINGLE MODE ================= */
 function singleBests(){ try { return JSON.parse(localStorage.getItem("sainou_single") || "{}"); } catch(e){ return {}; } }
@@ -1674,15 +2154,12 @@ function showSingleResult(g, score, detail){
 }
 $("btnSgRetry").onclick = ()=>{ if (singleCurrent) playSingle(singleCurrent); };
 $("btnSgFull").onclick = ()=>{ $("btnStart").click(); };
-$("btnSgList").onclick = ()=>{ clearTimers(); show("scr-title"); };
+$("btnSgList").onclick = ()=>{ clearTimers(); releasePendingSlot(); show("scr-title"); refreshSlotHint(); };
 buildSingleList();
-function refreshBest(){
-  try{
-    const b = JSON.parse(localStorage.getItem("sainou_best") || "null");
-    $("bestBox").textContent = b ? "上次鉴定：Lv." + b.lv + " 称号『" + b.title + "』" : "";
-  }catch(e){ $("bestBox").textContent = ""; }
-}
-refreshBest();
+/* 「上次鉴定」条目已移除 —— 信息由冒险小队的槽位完整保存。
+   顺手把旧版残留的存储键从 localStorage 里清掉。 */
+{ const s = store(); if (s) purgeLegacyBest(s); }
+refreshSlotHint();
 
 /* ================= BOSS BATTLE (DQ) ================= */
 /*ENGINE_START*/
@@ -1693,37 +2170,38 @@ const CASTERS = ["贤者","吟游诗人","魔法师","召唤师"];
 const JOB_SPECIAL = { "战士":"舍身斩","格斗家":"正拳突","魔法师":"炎枪","贤者":"圣雷","盗贼":"影刃","猎人":"必中矢","舞者":"剑舞","吟游诗人":"响歌","商人":"掷金","召唤师":"幻兽牙","预言家":"天罚","时魔术师":"时刃","骑士":"圣骑士突","闲人":"骰击","勇者":"闪光斩" };
 const ITEM_HEAL = 80;
 
-function Xof(b, s){ return s * 0.3 + b.lv * 0.1; }
+/* 攻击系数：成员自己的才能分×0.3 + 成员自己的等级×0.1 */
+function Xof(b, i){ const m = b.party[i]; return m.ms * 0.3 + m.lv * 0.1; }
 
 /* ---------- 技能：由你最擅长的才能决定 ---------- */
 const TSK = {
   reflex:{ name:"迅雷双牙", icon:"⚡", mp:5,
-    desc:(b,s)=>`连续斩击2次（每次 ${rd(Xof(b,s)*0.8)} 伤害）`,
-    use(b,s){ for (let i=0;i<2;i++) hitBoss(b, Xof(b,s)*0.8, {w:200}); } },
+    desc:(b,i)=>`连续斩击2次（每次 ${rd(Xof(b,i)*0.8)} 伤害）`,
+    use(b,i){ for (let k=0;k<2;k++) hitBoss(b, Xof(b,i)*0.8, {w:200}); } },
   tap:{ name:"千手连击", icon:"👊", mp:6,
-    desc:(b,s)=>`随机连续攻击4〜6次（每次 ${rd(Xof(b,s)*0.45)} 伤害）`,
-    use(b,s){ const n = 4 + Math.floor(Math.random()*3); for (let i=0;i<n;i++) hitBoss(b, Xof(b,s)*0.45, {w:130}); } },
+    desc:(b,i)=>`随机连续攻击4〜6次（每次 ${rd(Xof(b,i)*0.45)} 伤害）`,
+    use(b,i){ const n = 4 + Math.floor(Math.random()*3); for (let k=0;k<n;k++) hitBoss(b, Xof(b,i)*0.45, {w:130}); } },
   nerve:{ name:"背水霸气", icon:"🔥", mp:4,
-    desc:(b,s)=>`消耗自身20%HP，造成大量伤害（${rd(Xof(b,s)*2.4)}）`,
-    use(b,s){ const me = b.party[0]; const c = Math.max(1, Math.min(me.hp-1, rd(me.max*0.2))); me.hp -= c; ev(b,"hitMember",{i:0,n:c,self:true}); hitBoss(b, Xof(b,s)*2.4, {crit:true}); } },
+    desc:(b,i)=>`消耗自身20%HP，造成大量伤害（${rd(Xof(b,i)*2.4)}）`,
+    use(b,i){ const me = b.party[i]; const c = Math.max(1, Math.min(me.hp-1, rd(me.max*0.2))); me.hp -= c; ev(b,"hitMember",{i:i,n:c,self:true}); hitBoss(b, Xof(b,i)*2.4, {crit:true}); } },
   intuition:{ name:"天启一闪", icon:"🔮", mp:5,
-    desc:(b,s)=>`${clamp(rd(s*0.7),30,85)}%概率造成超大伤害（${rd(Xof(b,s)*2.6)}）。失败则造成少量伤害`,
-    use(b,s){ if (Math.random()*100 < clamp(rd(s*0.7),30,85)){ say(b,"天启降临！"); hitBoss(b, Xof(b,s)*2.6, {crit:true}); } else { say(b,"…直觉偏了。"); hitBoss(b, Xof(b,s)*0.6); } } },
+    desc:(b,i)=>`${clamp(rd(b.party[i].ms*0.7),30,85)}%概率造成超大伤害（${rd(Xof(b,i)*2.6)}）。失败则造成少量伤害`,
+    use(b,i){ if (Math.random()*100 < clamp(rd(b.party[i].ms*0.7),30,85)){ say(b,"天启降临！"); hitBoss(b, Xof(b,i)*2.6, {crit:true}); } else { say(b,"…直觉偏了。"); hitBoss(b, Xof(b,i)*0.6); } } },
   color:{ name:"虹彩分解", icon:"🌈", mp:6,
-    desc:(b,s)=>`${rd(Xof(b,s))}伤害＋魔王攻击力3回合降低25%`,
-    use(b,s){ hitBoss(b, Xof(b,s)); b.fx.atkDownT = 3; say(b,"魔王攻击力下降了！"); } },
+    desc:(b,i)=>`${rd(Xof(b,i))}伤害＋魔王攻击力3回合降低25%`,
+    use(b,i){ hitBoss(b, Xof(b,i)); b.fx.atkDownT = 3; say(b,"魔王攻击力下降了！"); } },
   calc:{ name:"终局演算", icon:"🧮", mp:7,
-    desc:(b,s)=>`魔王当前HP的10%＋${rd(Xof(b,s)*0.5)}伤害（HP越高越强）`,
-    use(b,s){ hitBoss(b, Math.min(160, b.bossHp*0.10) + Xof(b,s)*0.5, {fixed:true}); } },
+    desc:(b,i)=>`魔王当前HP的10%＋${rd(Xof(b,i)*0.5)}伤害（HP越高越强）`,
+    use(b,i){ hitBoss(b, Math.min(160, b.bossHp*0.10) + Xof(b,i)*0.5, {fixed:true}); } },
   art:{ name:"幻笔之兽", icon:"🖌️", mp:8,
-    desc:(b,s)=>`召唤幻兽。3回合内每回合造成 ${rd(Xof(b,s)*0.8)} 伤害`,
-    use(b,s){ b.fx.sumT = 3; b.fx.sumPow = Xof(b,s)*0.8; b.fx.sumName = "幻笔之兽"; say(b,"笔尖中冲出了幻之兽！"); } },
+    desc:(b,i)=>`召唤幻兽。3回合内每回合造成 ${rd(Xof(b,i)*0.8)} 伤害`,
+    use(b,i){ b.fx.sumT = 3; b.fx.sumPow = Xof(b,i)*0.8; b.fx.sumName = "幻笔之兽"; say(b,"笔尖中冲出了幻之兽！"); } },
   pattern:{ name:"万象之理", icon:"🧩", mp:6,
     desc:()=>`3回合内全体同伴攻击力提升30%`,
     use(b){ b.fx.atkT = 3; b.fx.atkV = Math.max(b.fx.atkV, 0.3); say(b,"大家攻击力提升了！"); } },
   rhythm:{ name:"鼓动凯歌", icon:"🥁", mp:7,
-    desc:(b,s)=>`全体同伴恢复 ${rd(25+s*0.3)} HP`,
-    use(b,s){ b.party.forEach((m,i)=>{ if (m.hp>0) healMember(b,i,25+s*0.3); }); } },
+    desc:(b,i)=>`全体同伴恢复 ${rd(25+b.party[i].ms*0.3)} HP`,
+    use(b,i){ b.party.forEach((m,k)=>{ if (m.hp>0) healMember(b,k,25+b.party[i].ms*0.3); }); } },
   memory:{ name:"追想回响", icon:"🪞", mp:5,
     desc:()=>`完全无效化下一次魔王攻击，并将其1.5倍反弹回去`,
     use(b){ b.fx.counter = true; say(b,"摆出反击架势！等待魔王的攻击…"); } },
@@ -1744,54 +2222,126 @@ const TSK = {
     use(b){ b.fx.silT = 2; if (b.charge){ b.charge = false; say(b,"魔王的蓄力技被封印了！"); } else say(b,"魔王的绝招被封印了！"); } }
 };
 
-/* ---------- 必杀技（按职业区分） ---------- */
+/* ---------- 必杀技（按职业区分） ----------
+   use(b, i)：i = 发动者的成员索引（自伤类技能需要知道是自己）。
+   伤害系数一律由成员自己现算（Xof(b, i)），不额外传参。 */
 const ULT = {
-  "战士":{ icon:"⚔️", name:"霸王断界斩", desc:(b,X)=>`舍身一击。${rd(X*3.2)}伤害`, use(b,X){ hitBoss(b, X*3.2, {crit:true}); } },
-  "格斗家":{ icon:"🦶", name:"百烈天翔脚", desc:(b,X)=>`连续踢击8次。每次 ${rd(X*0.5)} 伤害`, use(b,X){ for(let i=0;i<8;i++) hitBoss(b, X*0.5, {w:110}); } },
-  "魔法师":{ icon:"☄️", name:"星陨之术", desc:(b,X)=>`流星坠落。${rd(X*2.4)}伤害＋3回合燃烧（每回合 ${rd(X*0.4)}）`, use(b,X){ hitBoss(b, X*2.4, {crit:true}); b.fx.burnT = 3; b.fx.burnD = X*0.4; say(b,"魔王燃烧起来了！"); } },
+  "战士":{ icon:"⚔️", name:"霸王断界斩", desc:(b,i)=>`舍身一击。${rd(Xof(b,i)*3.2)}伤害`, use(b,i){ hitBoss(b, Xof(b,i)*3.2, {crit:true}); } },
+  "格斗家":{ icon:"🦶", name:"百烈天翔脚", desc:(b,i)=>`连续踢击8次。每次 ${rd(Xof(b,i)*0.5)} 伤害`, use(b,i){ for(let k=0;k<8;k++) hitBoss(b, Xof(b,i)*0.5, {w:110}); } },
+  "魔法师":{ icon:"☄️", name:"星陨之术", desc:(b,i)=>`流星坠落。${rd(Xof(b,i)*2.4)}伤害＋3回合燃烧（每回合 ${rd(Xof(b,i)*0.4)}）`, use(b,i){ const X=Xof(b,i); hitBoss(b, X*2.4, {crit:true}); b.fx.burnT = 3; b.fx.burnD = X*0.4; say(b,"魔王燃烧起来了！"); } },
   "贤者":{ icon:"✨", name:"大圣域", desc:()=>`全体同伴HP完全回复，2回合受到的伤害减半`, use(b){ b.party.forEach((m,i)=>{ if(m.hp>0) healMember(b,i,9999); }); b.fx.defT = 2; b.fx.defV = Math.max(b.fx.defV, 0.5); } },
-  "盗贼":{ icon:"🗝️", name:"影缝·夺命", desc:(b,X)=>`${rd(X*2)}伤害。追加让魔王1回合无法行动`, use(b,X){ hitBoss(b, X*2); b.fx.stun = Math.max(b.fx.stun,1); b.charge = false; say(b,"缝住了魔王的影子！"); } },
-  "猎人":{ icon:"🏹", name:"穿天一矢", desc:(b,X)=>`必中・会心的一箭。${rd(X*3.4)}伤害`, use(b,X){ hitBoss(b, X*3.4, {crit:true, fixed:true}); } },
+  "盗贼":{ icon:"🗝️", name:"影缝·夺命", desc:(b,i)=>`${rd(Xof(b,i)*2)}伤害。追加让魔王1回合无法行动`, use(b,i){ const X=Xof(b,i); hitBoss(b, X*2); b.fx.stun = Math.max(b.fx.stun,1); b.charge = false; say(b,"缝住了魔王的影子！"); } },
+  "猎人":{ icon:"🏹", name:"穿天一矢", desc:(b,i)=>`必中・会心的一箭。${rd(Xof(b,i)*3.4)}伤害`, use(b,i){ hitBoss(b, Xof(b,i)*3.4, {crit:true, fixed:true}); } },
   "舞者":{ icon:"💃", name:"梦幻之舞", desc:()=>`全体同伴恢复8点MP，3回合攻击力提升50%`, use(b){ b.party.forEach(m=>{ if(m.hp>0) m.mp = Math.min(m.mpMax, m.mp+8); }); b.fx.atkT = 3; b.fx.atkV = Math.max(b.fx.atkV, 0.5); say(b,"大家的力量充满了！"); } },
   "吟游诗人":{ icon:"🎻", name:"英雄谭·终幕之歌", desc:()=>`全体同伴恢复50%HP，3回合攻击力提升40%`, use(b){ b.party.forEach((m,i)=>{ if(m.hp>0) healMember(b,i,m.max*0.5); }); b.fx.atkT = 3; b.fx.atkV = Math.max(b.fx.atkV, 0.4); say(b,"英雄之歌响彻全场！"); } },
-  "商人":{ icon:"💰", name:"黄金暴行", desc:(b,X)=>`${rd(X*2)}＋此前造成总伤害的20%`, use(b,X){ hitBoss(b, X*2 + Math.min(150, b.dealt*0.2), {crit:true}); } },
-  "召唤师":{ icon:"🐉", name:"神兽降临", desc:(b,X)=>`召唤神兽。3回合内每回合造成 ${rd(X*1.3)} 伤害`, use(b,X){ b.fx.sumT = 3; b.fx.sumPow = X*1.3; b.fx.sumName = "神兽"; say(b,"神兽自天而降！"); } },
-  "预言家":{ icon:"📜", name:"未来确定", desc:(b,X)=>`${rd(X*1.6)}伤害。追加使魔王下一次攻击全部无效`, use(b,X){ hitBoss(b, X*1.6); b.fx.nullT = 1; say(b,"未来已被改写！下一次攻击无效！"); } },
-  "时魔术师":{ icon:"🕰️", name:"刻之支配者", desc:(b,X)=>`${rd(X*1.2)}伤害。让魔王2回合无法行动`, use(b,X){ hitBoss(b, X*1.2); b.fx.stun = Math.max(b.fx.stun,2); b.charge = false; say(b,"时间啊，停下！魔王无法动弹！"); } },
-  "骑士":{ icon:"🏰", name:"不灭圣盾", desc:(b,X)=>`2回合内全体同伴受到的伤害降低70%。${rd(X*1.2)}伤害`, use(b,X){ b.fx.defT = 2; b.fx.defV = Math.max(b.fx.defV, 0.7); hitBoss(b, X*1.2); say(b,"圣盾保护了大家！"); } },
-  "闲人":{ icon:"🎲", name:"命运之骰", desc:(b,X)=>`看骰子点数。1:自爆 2〜5:${rd(X*1.2)}〜${rd(X*3.2)}伤害 6:${rd(X*5)}＋全员回复`,
-    use(b,X){ const r = 1 + Math.floor(Math.random()*6); say(b,`掷出了命运之骰！点数是【${r}】！`);
-      if (r===1){ const me=b.party[0]; me.hp=Math.max(1,me.hp-20); ev(b,"hitMember",{i:0,n:20,self:true}); }
-      else if (r===6){ hitBoss(b, X*5, {crit:true}); b.party.forEach((m,i)=>{ if(m.hp>0) healMember(b,i,9999); }); }
+  "商人":{ icon:"💰", name:"黄金暴行", desc:(b,i)=>`${rd(Xof(b,i)*2)}＋此前造成总伤害的20%`, use(b,i){ const X=Xof(b,i); hitBoss(b, X*2 + Math.min(150, b.dealt*0.2), {crit:true}); } },
+  "召唤师":{ icon:"🐉", name:"神兽降临", desc:(b,i)=>`召唤神兽。3回合内每回合造成 ${rd(Xof(b,i)*1.3)} 伤害`, use(b,i){ const X=Xof(b,i); b.fx.sumT = 3; b.fx.sumPow = X*1.3; b.fx.sumName = "神兽"; say(b,"神兽自天而降！"); } },
+  "预言家":{ icon:"📜", name:"未来确定", desc:(b,i)=>`${rd(Xof(b,i)*1.6)}伤害。追加使魔王下一次攻击全部无效`, use(b,i){ const X=Xof(b,i); hitBoss(b, X*1.6); b.fx.nullT = 1; say(b,"未来已被改写！下一次攻击无效！"); } },
+  "时魔术师":{ icon:"🕰️", name:"刻之支配者", desc:(b,i)=>`${rd(Xof(b,i)*1.2)}伤害。让魔王2回合无法行动`, use(b,i){ const X=Xof(b,i); hitBoss(b, X*1.2); b.fx.stun = Math.max(b.fx.stun,2); b.charge = false; say(b,"时间啊，停下！魔王无法动弹！"); } },
+  "骑士":{ icon:"🏰", name:"不灭圣盾", desc:(b,i)=>`2回合内全体同伴受到的伤害降低70%。${rd(Xof(b,i)*1.2)}伤害`, use(b,i){ const X=Xof(b,i); b.fx.defT = 2; b.fx.defV = Math.max(b.fx.defV, 0.7); hitBoss(b, X*1.2); say(b,"圣盾保护了大家！"); } },
+  "闲人":{ icon:"🎲", name:"命运之骰", desc:(b,i)=>`看骰子点数。1:自爆 2〜5:${rd(Xof(b,i)*1.2)}〜${rd(Xof(b,i)*3.2)}伤害 6:${rd(Xof(b,i)*5)}＋全员回复`,
+    use(b,i){ const X=Xof(b,i); const r = 1 + Math.floor(Math.random()*6); say(b,`掷出了命运之骰！点数是【${r}】！`);
+      if (r===1){ const me=b.party[i]; me.hp=Math.max(1,me.hp-20); ev(b,"hitMember",{i:i,n:20,self:true}); }
+      else if (r===6){ hitBoss(b, X*5, {crit:true}); b.party.forEach((m,k)=>{ if(m.hp>0) healMember(b,k,9999); }); }
       else hitBoss(b, X*[0,0,1.2,1.8,2.5,3.2][r-1], {crit:r>=5}); } },
-  "勇者":{ icon:"🌟", name:"星光解放·约定之剑", desc:(b,X)=>`以光之剑造成 ${rd(X*3.4)} 伤害。全体同伴恢复30%HP`, use(b,X){ hitBoss(b, X*3.4, {crit:true}); b.party.forEach((m,i)=>{ if(m.hp>0) healMember(b,i,m.max*0.3); }); } }
+  "勇者":{ icon:"🌟", name:"星光解放·约定之剑", desc:(b,i)=>`以光之剑造成 ${rd(Xof(b,i)*3.4)} 伤害。全体同伴恢复30%HP`, use(b,i){ const X=Xof(b,i); hitBoss(b, X*3.4, {crit:true}); b.party.forEach((m,k)=>{ if(m.hp>0) healMember(b,k,m.max*0.3); }); } }
 };
 const ULT_MP = 14;
 
-/* ---------- 生成 ---------- */
-function newBattle(P, job, lv, name, hard){
-  const topKey = topKeyOf(P);
-  const m = job.hero ? Math.round(PARAMS.map(p=>P[p.key]).sort((a,c)=>c-a).slice(0,5).reduce((a,c)=>a+c,0)/5) : P[job.main];
-  const me = { name:name || "无名转生者", job:job.name, isPlayer:true, hp:100+rd(lv*1.0), mp:20+rd(lv*0.3), lv:lv, main:topKey, ms:P[topKey] };
-  me.max = me.hp; me.mpMax = me.mp;
-  let others = JOB_DEFS.filter(j=>j.name !== job.name).map(j=>({ j:j, s:jobScore(P,j) })).sort((a,c)=>c.s-a.s).slice(0,3);
-  if (!others.some(o=>CASTERS.indexOf(o.j.name)>=0) && CASTERS.indexOf(job.name)<0){
-    const h = JOB_DEFS.filter(j=>CASTERS.indexOf(j.name)>=0).map(j=>({ j:j, s:jobScore(P,j) })).sort((a,c)=>c.s-a.s)[0];
-    others[2] = h;
+/* ---------- 队伍构建 ----------
+   队伍严格按槽位 1→4 部署：
+     - 已填槽位 → 玩家操作，数值用玩家公式（HP=100+Lv, MP=20+Lv×0.3）
+     - 空槽位   → 电脑 NPC，占用固定名字（槽位2=阿贝尔, 槽位3=莉娜, 槽位4=高）
+   成员自带 skillKey / job / P / lv / ms / ultUsed，不再挂在战斗对象顶层。 */
+/* NPC 名字按槽位号固定：槽位2=阿贝尔, 槽位3=莉娜, 槽位4=高
+   槽位1（队长位）留空时由 NPC 占位，名为「队长」。 */
+const NPC_NAMES = { 0:"队长", 1:"阿贝尔", 2:"莉娜", 3:"高" };
+
+/* 玩家成员：由槽位数据现算职业、等级、称号、才能技能 */
+function makePlayerMember(slot, slotIdx){
+  const P = normScores(slot.P);
+  const job = judgeJob(P);
+  const lv = levelOf(P);
+  const skillKey = topKeyOf(P);
+  const ms = P[skillKey];
+  const m = {
+    slot: slotIdx, name: slot.name || "无名转生者", job: job.name, isPlayer: true,
+    hp: 100 + rd(lv * 1.0), mp: 20 + rd(lv * 0.3), lv: lv, ms: P[skillKey],
+    skillKey: skillKey, ultUsed: 0, guard: false
+  };
+  m.max = m.hp; m.mpMax = m.mp;
+  return m;
+}
+/* 电脑成员：沿用原有 NPC 数值公式
+   job = 职业定义（name 与 main 一起传），score = 该职业的适配分（决定等级） */
+function makeNpcMember(job, score, ms, name, slotIdx){
+  const m = {
+    slot: slotIdx, name: name, job: job.name, isPlayer: false,
+    hp: 70 + rd(ms * 0.9), mp: 8 + rd(ms / 4), lv: clamp(rd(score), 5, 99),
+    ms: ms, skillKey: job.main, ultUsed: 0, guard: false
+  };
+  m.max = m.hp; m.mpMax = m.mp;
+  return m;
+}
+
+/* 选出空槽位要用的 NPC 职业（沿用原有逻辑：按 jobScore 排序，必要时保证有一名施法者） */
+function pickNpcJobs(refP, leaderJob, need){
+  const jobs = JOB_DEFS.filter(j => j.name !== leaderJob)
+    .map(j => ({ j: j, s: jobScore(refP, j) }))
+    .sort((a, c) => c.s - a.s);
+  const chosen = jobs.slice(0, need);
+  if (need > 0 && !chosen.some(o => CASTERS.indexOf(o.j.name) >= 0) && CASTERS.indexOf(leaderJob) < 0){
+    const h = jobs.find(o => CASTERS.indexOf(o.j.name) >= 0);
+    if (h) chosen[chosen.length - 1] = h;
   }
-  const NAMES = ["阿贝尔","莉娜","高"];
-  const party = [me].concat(others.map((o,i)=>{
-    const ms = P[o.j.main];
-    const mem = { name:NAMES[i], job:o.j.name, isPlayer:false, hp:70+rd(ms*0.9), mp:8+rd(ms/4), lv:clamp(rd(o.s),5,99), main:o.j.main, ms:ms };
-    mem.max = mem.hp; mem.mpMax = mem.mp; return mem;
-  }));
-  const b = { hard:!!hard, P:P, job:job, name:me.name, lv:lv, m:m, X:0, party:party, ev:[], turn:1,
-    bossMax:rd(BOSS_DEF.hp*(hard?1.56:1)), phase:1, charge:false, items:4, dealt:0, taken:0, over:null, ultUsed:0, skillKey:topKey,
+  return chosen;
+}
+
+/* 组装队伍：slots 为 4 个槽位（元素为 {name, P} 或 null） */
+function buildParty(slots, refP){
+  slots = slots || [];
+  const fill = [];
+  for (let i=0; i<PARTY_SLOTS; i++) fill.push(isValidSlot(slots[i]) ? slots[i] : null);
+  /* 参考分数与「队长职业」都取第一个玩家槽位 ——
+     与原版一致：NPC 的职业与数值都以队长（槽位1 优先）的分数为基准，
+     且不与队长同职业。名册全空时没有队长，用传入的 refP 兜底。 */
+  let ref = null, leaderJob = null;
+  for (let i=0; i<PARTY_SLOTS; i++){
+    if (!fill[i]) continue;
+    const p = normScores(fill[i].P);
+    if (!ref){ ref = p; leaderJob = judgeJob(p).name; }
+  }
+  if (!ref) ref = normScores(refP || {});
+  const npcCount = PARTY_SLOTS - fill.filter(Boolean).length;
+  const npcs = pickNpcJobs(ref, leaderJob, npcCount);
+
+  const party = [];
+  let npcCursor = 0;
+  for (let i=0; i<PARTY_SLOTS; i++){
+    if (fill[i]){
+      party.push(makePlayerMember(fill[i], i));
+    } else {
+      const o = npcs[npcCursor++];
+      const ms = ref[o.j.main];
+      party.push(makeNpcMember(o.j, o.s, ms, NPC_NAMES[i] || ("同伴" + (i + 1)), i));
+    }
+  }
+  return party;
+}
+
+function newBattle(slots, hard, refP){
+  const party = buildParty(slots, refP);
+  const b = { hard:!!hard, party:party, ev:[], turn:1,
+    bossMax:rd(BOSS_DEF.hp*(hard?1.56:1)), phase:1, charge:false, items:4, dealt:0, taken:0, over:null,
     fx:{ atkT:0, atkV:0, defT:0, defV:0, weakT:0, atkDownT:0, stun:0, silT:0, burnT:0, burnD:0, sumT:0, sumPow:0, sumName:"", counter:false, focus:false, nullT:0 } };
   b.bossHp = b.bossMax;
-  b.X = Xof(b, P[topKey]);
   return b;
 }
+
+/* 玩家操作成员（按槽位号顺序） */
+function playerOrder(b){ const o=[]; for(let i=0;i<b.party.length;i++) if (b.party[i].isPlayer) o.push(i); return o; }
+/* 本回合需要玩家下指令的成员（存活且由玩家操作） */
+function pendingPlayers(b){ return playerOrder(b).filter(i=>b.party[i].hp>0); }
 
 /* ---------- 事件 ---------- */
 function snap(b){
@@ -1830,9 +2380,11 @@ function hitMember(b, i, raw, o){
   return d;
 }
 
-/* ---------- 我方行动 ---------- */
-function heroAct(b, cmd){
-  const me = b.party[0], X = b.X;
+/* ---------- 我方行动 ----------
+   i = 行动成员索引。玩家与 NPC 走同一条路径，只是指令来源不同。 */
+function memberAct(b, i, cmd){
+  const me = b.party[i], X = Xof(b, i);
+  if (me.hp <= 0) return;
   me.guard = false;
   if (cmd.t === "atk"){
     say(b, me.name + "发动攻击！", 500);
@@ -1842,23 +2394,32 @@ function heroAct(b, cmd){
     say(b, me.name + " 正在防御。（MP+3）");
   } else if (cmd.t === "item"){
     b.items--;
-    const i = alive(b).sort((a,c)=>b.party[a].hp/b.party[a].max - b.party[c].hp/b.party[c].max)[0];
-    say(b, "使用了回复药！", 500);
-    healMember(b, i, ITEM_HEAL); say(b, b.party[i].name + " 的HP回复了！", 400);
+    /* 治疗目标：玩家指定（cmd.target）；未指定时回落到 HP 比例最低的存活同伴 */
+    let t = (typeof cmd.target === "number") ? cmd.target : -1;
+    if (t < 0 || t >= b.party.length || b.party[t].hp <= 0){
+      t = alive(b).sort((a,c)=>b.party[a].hp/b.party[a].max - b.party[c].hp/b.party[c].max)[0];
+    }
+    if (t < 0) return;
+    say(b, me.name + "使用了回复药！", 500);
+    healMember(b, t, ITEM_HEAL); say(b, b.party[t].name + " 的HP回复了！", 400);
   } else if (cmd.t === "skill"){
-    const sk = TSK[b.skillKey]; me.mp -= sk.mp;
+    const sk = TSK[me.skillKey]; if (!sk) return;
+    me.mp -= sk.mp;
     say(b, me.name + "发动 " + sk.name + "！", 600);
-    sk.use(b, b.P[b.skillKey]);
+    sk.use(b, i);
   } else if (cmd.t === "ult"){
-    const u = ULT[b.job.name]; me.mp -= ULT_MP; b.ultUsed++;
-    ev(b,"ult",{ name:u.name, icon:u.icon, job:b.job.name });
-    u.use(b, X);
+    const u = ULT[me.job] || ULT["勇者"]; if (!u) return;
+    me.mp -= ULT_MP; me.ultUsed++;
+    ev(b,"ult",{ name:u.name, icon:u.icon, job:me.job, i:i });
+    u.use(b, i);
   }
 }
+/* 电脑 NPC 行动：沿用原有 AI */
 function companionAct(b, i){
   const m = b.party[i]; if (m.hp <= 0 || b.bossHp <= 0) return;
   m.guard = false;
   const wounded = alive(b).sort((a,c)=>b.party[a].hp/b.party[a].max - b.party[c].hp/b.party[c].max)[0];
+  if (wounded < 0) return;
   const W = b.party[wounded];
   if (CASTERS.indexOf(m.job) >= 0 && m.mp >= 6 && W.hp / W.max < 0.5){
     m.mp -= 6; say(b, m.name + " 唱起了治愈之光！", 500); healMember(b, wounded, 42); say(b, W.name + " 的HP回复了！", 350); return;
@@ -1906,7 +2467,7 @@ function bossMove(b, second){
   const pm = b.phase === 2 ? 1.12 : 1;
   switch (mv){
     case "claw": say(b, nm + "发动攻击！", 600); single(31*pm); break;
-    case "double": say(b, nm + " 的暗之冻结！攻击2次！", 700); single(21*pm); if (b.party[0].hp>0) single(21*pm); break;
+    case "double": say(b, nm + " 的暗之冻结！攻击2次！", 700); single(21*pm); if (alive(b).length > 0) single(21*pm); break;
     case "wave": say(b, nm + " 放出了无感波动！", 700); bossHitAll(b, 15*pm); break;
     case "gather": b.charge = true; ev(b,"charge",{}); say(b, nm + " 正在蓄力…！\n（下回合就是大招！请用防御・回复・控制做好准备）", 1200); break;
     case "roar": b.charge = false; say(b, nm + " 的终末咆哮！！", 800); bossHitAll(b, 40*pm); break;
@@ -1916,7 +2477,7 @@ function bossTurn(b){
   const acts = b.phase === 2 ? 2 : 1;
   for (let k=0;k<acts;k++){
     if (b.bossHp <= 0) return;
-    if (b.party[0].hp <= 0) return;
+    if (alive(b).length === 0) return;   /* 全队阵亡才算结束 */
     if (k === 1) say(b, "魔王燃起怒火，行动更加迅捷！", 700);
     if (b.fx.stun > 0){ b.fx.stun--; say(b, "魔王无法行动！", 700); continue; }
     bossMove(b, k === 1);
@@ -1926,7 +2487,8 @@ function bossTurn(b){
 /* ---------- 回合 ---------- */
 function checkEnd(b){
   if (b.bossHp <= 0){ b.over = "win"; ev(b,"over",{}); return true; }
-  if (b.party[0].hp <= 0){ b.over = "lose"; ev(b,"over",{}); return true; }
+  /* 败北条件：全队阵亡（队长阵亡但还有队友存活时战斗继续） */
+  if (alive(b).length === 0){ b.over = "lose"; ev(b,"over",{}); return true; }
   return false;
 }
 function checkPhase(b){
@@ -1936,13 +2498,30 @@ function checkPhase(b){
     say(b, "魔王燃起怒火！（此后每回合行动2次！）", 1200);
   }
 }
-function playTurn(b, cmd){
+/* ---------- 回合 ----------
+   指令流：先按槽位号依次收取每个存活玩家成员的指令，全部收齐后
+   按槽位号顺序结算玩家行动 → NPC 行动 → 魔王行动。
+   cmds 形如 { "0": {t:"atk"}, "2": {t:"skill"} }（键为成员索引的字符串）。 */
+function playTurn(b, cmds){
   if (b.over) return;
-  heroAct(b, cmd); checkPhase(b); if (checkEnd(b)) return;
-  for (let i=1;i<b.party.length;i++){ companionAct(b, i); checkPhase(b); if (checkEnd(b)) return; }
-  /* 召唤・燃烧 */
+  const order = playerOrder(b);
+  /* 1) 玩家行动：按槽位号顺序结算 */
+  for (const i of order){
+    if (b.bossHp <= 0) break;
+    if (b.party[i].hp <= 0) continue;
+    const cmd = cmds && cmds[String(i)] ? cmds[String(i)] : { t:"atk" };
+    memberAct(b, i, cmd);
+    checkPhase(b); if (checkEnd(b)) return;
+  }
+  /* 2) 电脑 NPC 行动 */
+  for (let i=0;i<b.party.length;i++){
+    if (b.party[i].isPlayer) continue;
+    companionAct(b, i); checkPhase(b); if (checkEnd(b)) return;
+  }
+  /* 3) 召唤・燃烧 */
   if (b.fx.sumT > 0){ say(b, "🦁 " + b.fx.sumName + "发动攻击！", 450); hitBoss(b, b.fx.sumPow, {noFocus:true}); b.fx.sumT--; checkPhase(b); if (checkEnd(b)) return; }
   if (b.fx.burnT > 0){ say(b, "🔥 魔王正在被火焰灼烧！", 400); hitBoss(b, b.fx.burnD, {fixed:true, noFocus:true}); b.fx.burnT--; checkPhase(b); if (checkEnd(b)) return; }
+  /* 4) 魔王行动 */
   bossTurn(b); if (checkEnd(b)) return;
   /* 回合结束处理 */
   const f = b.fx;
@@ -1952,16 +2531,19 @@ function playTurn(b, cmd){
   b.turn++;
   ev(b,"turn",{ n:b.turn });
 }
-function canCmd(b, t){
-  const me = b.party[0];
-  if (t === "skill") return me.mp >= TSK[b.skillKey].mp;
+/* 指令可用性：按成员自己的MP / 技能消耗判定 */
+function canCmd(b, t, i){
+  const me = b.party[i];
+  if (!me) return false;
+  if (t === "skill"){ const sk = TSK[me.skillKey]; return !!sk && me.mp >= sk.mp; }
   if (t === "ult") return me.mp >= ULT_MP;
   if (t === "item") return b.items > 0;
   return true;
 }
 /*ENGINE_END*/
 function refreshBossArea(){
-  const lv = S.finalLv || 0;
+  /* 门槛：队伍中玩家角色的最高等级（队友够高时我也能挑战） */
+  const lv = partyMaxLv();
   if (S.bossResult === "win"){
     $("btnBoss").style.display = "none"; $("bossLock").style.display = "block";
     $("bossLock").textContent = "👑 魔王已被讨伐。世界得救了！";
@@ -1972,13 +2554,15 @@ function refreshBossArea(){
     S.manifestArmed = true;
   } else if (lv >= 70){
     $("btnBoss").style.display = "block"; $("bossLock").style.display = "block";
-    $("bossLock").textContent = "通往异世界的入口敞开，静静地等待着。";
+    $("bossLock").textContent = "通往异世界的入口敞开，静静地等待着。（队伍最高等级 Lv." + lv + "）";
     S.manifestArmed = false;
   } else {
     $("btnBoss").style.display = "none"; $("bossLock").style.display = "none";
     S.manifestArmed = false;
   }
 }
+/* 名册中玩家角色的最高等级（门槛判定用） */
+function partyMaxLv(){ return partyMaxPlayerLv(loadParty().slots); }
 /* ---------- manifestation event ---------- */
 let manifestTimers = [];
 function startManifest(){
@@ -2029,47 +2613,83 @@ const btUi = { busy:false, token:0, skip:false };
 function btWon(){ try{ return localStorage.getItem("sainou_boss_win") === "1"; }catch(e){ return false; } }
 function btSaveWin(){ try{ localStorage.setItem("sainou_boss_win", "1"); }catch(e){} }
 function btSleep(ms){ return new Promise(r=>{ const my = btUi.token; const t = setTimeout(done, btUi.skip ? 40 : ms); function done(){ clearTimeout(t); btUi.wake = null; r(); } btUi.wake = done; }); }
-function bhtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+/* HTML 转义：角色名可能来自分享码（不可信输入），必须转义 & < > " ' */
+function bhtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 function rubyName(o){ return bhtml(o.name); }
 
 /* ---------- 作戦会議 ---------- */
+/* 战斗的「来处」：从结果页来还是从小队页来 —— 决定返回按钮的去向 */
+let btOrigin = "scr-result";
 function startBoss(){
-  const P = S.scores;
-  const job = S.jobObj || judgeJob(P); S.jobObj = job;
-  const b0 = newBattle(P, job, S.finalLv || 0, S.name, false);
-  $("biName").textContent = S.name || "无名转生者";
-  $("biJob").textContent = "【" + job.name + "】 Lv." + (S.finalLv || 0);
-  $("biHp").textContent = b0.party[0].max;
-  const box = $("biSkills"); box.innerHTML = "";
+  const slots = currentSlots();
+  btOrigin = (btOrigin === "scr-party") ? "scr-party" : "scr-result";
+  const b0 = newBattle(slots, false, S.scores);
+  const box = $("biTeam"); if (box) box.innerHTML = "";
+  /* 全队一览：每人名字、职业、等级、控制方式、技能 */
+  const team = $("biTeam");
+  b0.party.forEach((m, i) => {
+    const d = document.createElement("div");
+    d.className = "bi-mem" + (m.isPlayer ? "" : " pc");
+    const sk = TSK[m.skillKey];
+    const u = ULT[m.job] || ULT["勇者"];
+    d.innerHTML =
+      '<div class="m-top"><span class="who">' + bhtml(m.name) + '　' + bhtml(m.job) + ' Lv.' + m.lv + '</span>' +
+      '<span class="tag ' + (m.isPlayer ? "human" : "pc") + '">' + (m.isPlayer ? "玩家" : "电脑") + '</span></div>' +
+      '<div class="m-meta">槽位' + (i + 1) + '　HP ' + m.max + '　MP ' + m.mpMax + '　技能：' +
+      bhtml(sk ? sk.name : "—") + '　必杀技：' + bhtml(u.name) + '</div>';
+    team.appendChild(d);
+  });
+  /* 门槛：队伍中玩家角色的最高等级（与结果页、小队页同一个算法） */
+  const maxLv = partyMaxPlayerLv(slots);
+  const players = b0.party.filter(m => m.isPlayer).length;
+  $("biName").textContent = (players > 1 ? "小队 " + players + " 人" : (S.name || "无名转生者"));
+  $("biJob").textContent = "队伍最高等级 Lv." + maxLv + "（需达到70）";
+  $("biHp").textContent = b0.party.reduce((a, m) => a + m.max, 0);
+  const boxS = $("biSkills"); boxS.innerHTML = "";
   const add = (host, icon, o, tagHtml, mp, desc)=>{
     const d = document.createElement("div"); d.className = "bi-item" + (host === "ult" ? " ult" : "");
     d.innerHTML = '<div class="t"><span>' + icon + '</span>' + rubyName(o) + ' ' + tagHtml + '<span class="pill">MP' + mp + '</span></div><div class="d">' + bhtml(desc) + '</div>';
     return d;
   };
-  const sk = TSK[b0.skillKey];
-  box.appendChild(add("skill", sk.icon, sk, '<span class="tag atk">' + PARAM_NAME[b0.skillKey] + '的才能技能</span>', sk.mp, sk.desc(b0, P[b0.skillKey])));
-  const u = ULT[job.name] || ULT["勇者"];
-  box.appendChild(add("ult", u.icon, u, '<span class="tag ult">' + bhtml(job.name) + '的必杀技</span>', ULT_MP, u.desc(b0, b0.X)));
-  const ub = $("biUlt"); ub.innerHTML = '<div class="bi-item"><div class="d"><b>攻击</b>：攻击魔王（' + rd(b0.X) + '伤害前后）<br><b>防御</b>：本回合受到的伤害减半＋恢复3点MP<br><b>道具</b>：回复药×4（治疗一名同伴80点）</div></div>';
+  /* 全队每个人的才能技能与必杀技都列出来（玩家角色各自按自己的分数现算） */
+  b0.party.forEach((m, i) => {
+    const sk = TSK[m.skillKey];
+    const u = ULT[m.job] || ULT["勇者"];
+    if (sk){
+      boxS.appendChild(add("skill", sk.icon, sk,
+        '<span class="tag atk">' + bhtml(m.name) + '（' + bhtml(m.job) + '）的才能技能</span>',
+        sk.mp, sk.desc(b0, i)));
+    }
+    boxS.appendChild(add("ult", u.icon, u,
+      '<span class="tag ult">' + bhtml(m.name) + '（' + bhtml(m.job) + '）的必杀技</span>',
+      ULT_MP, u.desc(b0, i)));
+  });
+  const ub = $("biUlt"); ub.innerHTML = '<div class="bi-item"><div class="d"><b>攻击</b>：攻击魔王<br><b>防御</b>：本回合受到的伤害减半＋恢复3点MP<br><b>道具</b>：回复药×4（治疗一名同伴80点，可指定目标）<br><b>败北条件</b>：全队都倒下才算失败</div></div>';
   const won = btWon();
   $("biDh").disabled = !won;
   $("biDhS").textContent = won ? "HP1.56倍・攻击1.34倍" : "通关后解锁";
   if (!won) btHard = false;
   $("biDn").classList.toggle("on", !btHard); $("biDh").classList.toggle("on", btHard);
+  $("btnBiBack").textContent = btOrigin === "scr-party" ? "返回小队" : "返回结果";
   show("scr-bintro");
 }
 $("biDn").onclick = ()=>{ btHard = false; $("biDn").classList.add("on"); $("biDh").classList.remove("on"); };
 $("biDh").onclick = ()=>{ if (!btWon()) return; btHard = true; $("biDh").classList.add("on"); $("biDn").classList.remove("on"); };
 $("btnBiGo").onclick = ()=>{ ac(); beginBattle(); };
-$("btnBiBack").onclick = ()=>{ show("scr-result"); refreshBossArea(); };
-$("btnBoss").onclick = ()=>{ ac(); startBoss(); };
+$("btnBiBack").onclick = ()=>{ btBack(); };
+$("btnBoss").onclick = ()=>{ ac(); btOrigin = "scr-result"; startBoss(); };
+/* 从战斗/作战会议返回「来处」 */
+function btBack(){
+  if (btOrigin === "scr-party"){ openParty(); return; }
+  show("scr-result"); refreshBossArea();
+}
 
 /* ---------- 戦闘 ---------- */
 function beginBattle(){
-  const P = S.scores, job = S.jobObj || judgeJob(P);
-  bossState = newBattle(P, job, S.finalLv || 0, S.name, btHard);
+  bossState = newBattle(currentSlots(), btHard, S.scores);
   const b = bossState;
   btUi.token++; btUi.busy = false; btUi.skip = false;
+  btCmds = {}; btCur = null;
   $("btOver").className = ""; $("btOver").innerHTML = "";
   $("btnBossShare").style.display = "none"; $("btnBossEnd").style.display = "none";
   $("bossSprite").classList.remove("dead", "frozen", "hit");
@@ -2078,7 +2698,8 @@ function beginBattle(){
   show("scr-boss");
   renderSnap(snap(b));
   say(b, (btHard ? "真·" : "") + "魔王·无知 出现了！", 800);
-  say(b, "同伴 " + b.party.slice(1).map(m=>m.name).join("・") + " 赶到了！", 900);
+  const allies = b.party.slice(1).map(m=>m.name).join("・");
+  say(b, allies ? "同伴 " + allies + " 赶到了！" : "没有人同行 —— 你独自面对魔王。", 900);
   playEvents();
 }
 function renderSnap(s){
@@ -2108,9 +2729,9 @@ function renderSnap(s){
   const row = $("dqParty"); row.innerHTML = "";
   b.party.forEach((m, i)=>{
     const p = s.party[i], w = document.createElement("div");
-    w.className = "dqwin pwin" + (m.isPlayer ? " leader" : "") + (p.hp <= 0 ? " dead" : "") + (p.hp > 0 && p.hp / m.max < 0.3 ? " low" : "") + (p.guard ? " guard" : "");
+    w.className = "dqwin pwin" + (m.isPlayer ? " leader" : " npc") + (p.hp <= 0 ? " dead" : "") + (p.hp > 0 && p.hp / m.max < 0.3 ? " low" : "") + (p.guard ? " guard" : "");
     w.id = "pm" + i;
-    w.innerHTML = '<div class="pw-name">' + bhtml(m.name) + '</div><div class="pw-line pw-hp"><span>H</span><b>' + Math.max(0, p.hp) + '</b></div><div class="dq-bar"><div style="width:' + clamp(p.hp / m.max * 100, 0, 100) + '%"></div></div><div class="pw-line"><span>M</span><b>' + p.mp + '</b></div><div class="pw-job">' + bhtml(m.job) + '</div>';
+    w.innerHTML = '<div class="pw-name">' + bhtml(m.name) + (m.isPlayer ? "" : ' <span class="pc-tag">PC</span>') + '</div><div class="pw-line pw-hp"><span>H</span><b>' + Math.max(0, p.hp) + '</b></div><div class="dq-bar"><div style="width:' + clamp(p.hp / m.max * 100, 0, 100) + '%"></div></div><div class="pw-line"><span>M</span><b>' + p.mp + '</b></div><div class="pw-job">' + bhtml(m.job) + '</div>';
     row.appendChild(w);
   });
 }
@@ -2137,7 +2758,7 @@ async function playEvents(){
       case "ult": {
         const c = $("btCut"); c.querySelector(".j").textContent = "【" + e.job + "】的必杀技"; c.querySelector(".n").textContent = e.icon + " " + e.name;
         c.className = ""; void c.offsetWidth; c.className = "show";
-        $("dqMsg").textContent = b.party[0].name + "发动 " + e.name + "！！";
+        $("dqMsg").textContent = (e.i != null && b.party[e.i] ? b.party[e.i].name : b.party[0].name) + "发动 " + e.name + "！！";
         beep(392, .2, 0, "sawtooth", .08); beep(587, .2, .12, "sawtooth", .08); beep(784, .35, .24, "sawtooth", .09);
         await btSleep(1300); break; }
       case "hitBoss":
@@ -2160,7 +2781,16 @@ async function playEvents(){
   if (btUi.token !== my) return;
   btUi.busy = false; btUi.skip = false;
   renderSnap(snap(b));
-  if (b.over) finishBattle(); else showCmd("main");
+  if (b.over){ finishBattle(); return; }
+  /* 没有人需要下令时（名册全空，或玩家角色全部阵亡只剩电脑同伴），
+     队伍由电脑自动战斗，避免回合卡住 */
+  if (nextPending() === null){
+    btCur = null;
+    playTurn(b, {});
+    playEvents();
+    return;
+  }
+  showCmd("main");
 }
 $("dqMsg").onclick = ()=>{ if (btUi.busy){ btUi.skip = true; if (btUi.wake) btUi.wake(); } };
 
@@ -2168,36 +2798,74 @@ $("dqMsg").onclick = ()=>{ if (btUi.busy){ btUi.skip = true; if (btUi.wake) btUi
 function cmdBtn(label, fn, disabled, sub){
   const bt = document.createElement("button"); bt.className = "cmd-item"; bt.innerHTML = label; bt.disabled = !!disabled; bt.onclick = fn; return bt;
 }
+/* 本回合已下达的指令 { 成员索引: {t:...} } */
+let btCmds = {};
+/* 当前等待玩家下令的成员索引 */
+let btCur = null;
+
+/* 下一个该下令的成员（跳过已阵亡的） */
+function nextPending(){
+  const b = bossState; if (!b) return null;
+  for (const i of pendingPlayers(b)){
+    if (btCmds[String(i)] !== undefined) continue;
+    return i;
+  }
+  return null;
+}
 function showCmd(mode){
   const b = bossState; if (!b || b.over) return;
   const box = $("dqCmd"), list = $("dqCmdList"); list.innerHTML = ""; box.classList.add("on");
   list.className = mode === "main" ? "main" : "";
-  const me = b.party[0];
+  if (btCur === null) btCur = nextPending();
+  if (btCur === null){ box.classList.remove("on"); return; }
+  const me = b.party[btCur];
+  const slotTag = "槽位" + (btCur + 1) + "・";
   if (mode === "main"){
-    $("dqMsg").textContent = b.charge ? "⚠ 魔王正在蓄力！怎么办？" : me.name + "，请行动。";
+    $("dqMsg").textContent = (b.charge ? "⚠ 魔王正在蓄力！" : "") + slotTag + me.name + "，请行动。";
     list.appendChild(cmdBtn("攻击", ()=>doCmd({ t:"atk" })));
     list.appendChild(cmdBtn("技能", ()=>showCmd("skill")));
     list.appendChild(cmdBtn("防御", ()=>doCmd({ t:"guard" })));
     list.appendChild(cmdBtn("道具", ()=>showCmd("item")));
   } else if (mode === "skill"){
-    const sk = TSK[b.skillKey], u = ULT[b.job.name] || ULT["勇者"];
+    const sk = TSK[me.skillKey], u = ULT[me.job] || ULT["勇者"];
     const note = (txt)=>{ const d = document.createElement("div"); d.className = "cmd-note"; d.textContent = txt; return d; };
-    list.appendChild(cmdBtn(sk.icon + " " + rubyName(sk) + '<span class="mp">MP' + sk.mp + '</span>', ()=>doCmd({ t:"skill" }), !canCmd(b, "skill")));
-    list.appendChild(note(sk.desc(b, b.P[b.skillKey])));
-    list.appendChild(cmdBtn(u.icon + " " + rubyName(u) + '<span class="mp">MP' + ULT_MP + '</span>', ()=>doCmd({ t:"ult" }), !canCmd(b, "ult")));
-    list.appendChild(note("【必杀技】" + u.desc(b, b.X)));
+    list.appendChild(cmdBtn(sk.icon + " " + rubyName(sk) + '<span class="mp">MP' + sk.mp + '</span>', ()=>doCmd({ t:"skill" }), !canCmd(b, "skill", btCur)));
+    list.appendChild(note(sk.desc(b, btCur)));
+    list.appendChild(cmdBtn(u.icon + " " + rubyName(u) + '<span class="mp">MP' + ULT_MP + '</span>', ()=>doCmd({ t:"ult" }), !canCmd(b, "ult", btCur)));
+    list.appendChild(note("【必杀技】" + u.desc(b, btCur)));
     list.appendChild(cmdBtn("返回", ()=>showCmd("main")));
-    $("dqMsg").textContent = "要使用哪个技能？　（当前MP " + me.mp + "）";
+    $("dqMsg").textContent = slotTag + me.name + "：要使用哪个技能？　（当前MP " + me.mp + "）";
   } else if (mode === "item"){
-    list.appendChild(cmdBtn("回复药（剩余" + b.items + "）", ()=>doCmd({ t:"item" }), !canCmd(b, "item")));
-    const d = document.createElement("div"); d.className = "cmd-note"; d.textContent = "治疗HP最低的同伴80点"; list.appendChild(d);
+    list.appendChild(cmdBtn("回复药（剩余" + b.items + "）", ()=>showCmd("target"), !canCmd(b, "item", btCur)));
+    const d = document.createElement("div"); d.className = "cmd-note"; d.textContent = "治疗一名同伴80点（可指定目标）"; list.appendChild(d);
     list.appendChild(cmdBtn("返回", ()=>showCmd("main")));
-    $("dqMsg").textContent = "选择道具";
+    $("dqMsg").textContent = slotTag + me.name + "：选择道具";
+  } else if (mode === "target"){
+    const al = alive(b);
+    list.appendChild(cmdBtn("返回", ()=>showCmd("main")));
+    al.forEach(i => {
+      const m = b.party[i];
+      list.appendChild(cmdBtn(bhtml(m.name) + "（" + Math.max(0, m.hp) + "/" + m.max + "）", ()=>doCmd({ t:"item", target:i })));
+    });
+    $("dqMsg").textContent = slotTag + me.name + "：选择治疗目标";
   }
 }
+/* 下达一条指令；收齐所有玩家指令后统一结算 */
 function doCmd(cmd){
   const b = bossState; if (!b || btUi.busy || b.over) return;
-  playTurn(b, cmd); playEvents();
+  if (btCur !== null) btCmds[String(btCur)] = cmd;
+  const nxt = nextPending();
+  if (nxt !== null){
+    btCur = nxt;
+    showCmd("main");
+    return;
+  }
+  /* 全员指令收齐 —— 结算整个回合 */
+  btCur = null;
+  const cmds = btCmds;
+  btCmds = {};
+  playTurn(b, cmds);
+  playEvents();
 }
 
 /* ---------- 決着 ---------- */
@@ -2214,7 +2882,7 @@ function finishBattle(){
       '<button class="btn blue" id="ovShare">𝕏 分享结果</button>' + (btHard ? "" : '<button class="btn" id="ovHard" style="background:#6a1b9a;">挑战真·魔王（解锁！）</button>') + '<button class="btn sub" id="ovBack">返回结果</button>';
     $("ovShare").onclick = shareBoss;
     if ($("ovHard")) $("ovHard").onclick = ()=>{ btHard = true; startBoss(); };
-    $("ovBack").onclick = ()=>{ show("scr-result"); refreshBossArea(); };
+    $("ovBack").onclick = ()=>{ btBack(); };
   } else {
     S.bossResult = "lose";
     ov.className = "show lose";
@@ -2222,7 +2890,7 @@ function finishBattle(){
       '<button class="btn" id="ovRetry" style="background:linear-gradient(180deg,#ff8a65,#ff5722);color:#fff;box-shadow:0 4px 0 #b23c17;text-shadow:0 1px 2px rgba(0,0,0,.35);">⚔ 再次挑战</button><button class="btn blue" id="ovPlan">返回作战会议</button><button class="btn sub" id="ovBack">返回结果</button>';
     $("ovRetry").onclick = ()=>{ beginBattle(); };
     $("ovPlan").onclick = ()=>{ startBoss(); };
-    $("ovBack").onclick = ()=>{ show("scr-result"); refreshBossArea(); };
+    $("ovBack").onclick = ()=>{ btBack(); };
     jingle(false);
   }
 }
