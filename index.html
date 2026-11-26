@@ -2265,11 +2265,10 @@ const ULT_MP = 14;
 /* ---------- 队伍构建 ----------
    队伍严格按槽位 1→4 部署：
      - 已填槽位 → 玩家操作，数值用玩家公式（HP=100+Lv, MP=20+Lv×0.3）
-     - 空槽位   → 电脑 NPC，占用固定名字（槽位2=阿贝尔, 槽位3=莉娜, 槽位4=高）
+     - 空槽位   → 电脑 NPC，名字按槽位号固定为 NPC 1 / NPC 2 / NPC 3 / NPC 4
    成员自带 skillKey / job / P / lv / ms / ultUsed，不再挂在战斗对象顶层。 */
-/* NPC 名字按槽位号固定：槽位2=阿贝尔, 槽位3=莉娜, 槽位4=高
-   槽位1（队长位）留空时由 NPC 占位，名为「队长」。 */
-const NPC_NAMES = { 0:"队长", 1:"阿贝尔", 2:"莉娜", 3:"高" };
+/* NPC 名字按槽位号固定（槽位号即位置，与填不填槽无关） */
+const NPC_NAMES = { 0:"NPC 1", 1:"NPC 2", 2:"NPC 3", 3:"NPC 4" };
 
 /* 玩家成员：由槽位数据现算职业、等级、称号、才能技能 */
 function makePlayerMember(slot, slotIdx){
@@ -2318,7 +2317,8 @@ function buildParty(slots, refP){
   for (let i=0; i<PARTY_SLOTS; i++) fill.push(isValidSlot(slots[i]) ? slots[i] : null);
   /* 参考分数与「队长职业」都取第一个玩家槽位 ——
      与原版一致：NPC 的职业与数值都以队长（槽位1 优先）的分数为基准，
-     且不与队长同职业。名册全空时没有队长，用传入的 refP 兜底。 */
+     且不与队长同职业。名册全空时没有队长，用传入的 refP 兜底。
+     （「队长」指的是槽位1 这个位置，不是某个 NPC 的名字） */
   let ref = null, leaderJob = null;
   for (let i=0; i<PARTY_SLOTS; i++){
     if (!fill[i]) continue;
@@ -2337,7 +2337,7 @@ function buildParty(slots, refP){
     } else {
       const o = npcs[npcCursor++];
       const ms = ref[o.j.main];
-      party.push(makeNpcMember(o.j, o.s, ms, NPC_NAMES[i] || ("同伴" + (i + 1)), i));
+      party.push(makeNpcMember(o.j, o.s, ms, NPC_NAMES[i], i));
     }
   }
   return party;
@@ -2713,7 +2713,7 @@ function beginBattle(){
   renderSnap(snap(b));
   say(b, (btHard ? "真·" : "") + "魔王·无知 出现了！", 800);
   const allies = b.party.slice(1).map(m=>m.name).join("・");
-  say(b, allies ? "同伴 " + allies + " 赶到了！" : "没有人同行 —— 你独自面对魔王。", 900);
+  say(b, allies ? "队友 " + allies + " 赶到了！" : "没有人同行 —— 你独自面对魔王。", 900);
   playEvents();
 }
 function renderSnap(s){
