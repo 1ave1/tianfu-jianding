@@ -1002,31 +1002,6 @@ function gameTrace(stage, done){
   msg.style.color = "#cfeaff"; msg.style.lineHeight = "1.6";
   const btn = document.createElement("button"); btn.className = "btn"; btn.textContent = "确定";
   stage.appendChild(cv); stage.appendChild(msg); stage.appendChild(btn);
-  /* 调试用：复制本测试的详细指标（调完参数会移除） */
-  const logBtn = document.createElement("button");
-  logBtn.className = "btn sub"; logBtn.textContent = "复制测试日志";
-  logBtn.style.cssText = "display:block;margin:8px auto 0;font-size:12px;padding:6px 14px;";
-  stage.appendChild(logBtn);
-  logBtn.onclick = async ()=>{
-    const rows = window.__traceLog || [];
-    const lines = rows.map(r => [
-      "#"+r.round, "score="+r.score, "C="+r.cover, "A="+r.acc, "S="+r.speed,
-      "p90="+r.p90+"px", "avg="+r.avg+"px", "max="+r.max+"px", "min="+r.min+"px",
-      "cov="+r.coverage+"%", "eff="+r.eff,
-      "t="+r.elapsed+"s", "gate="+r.gate+"s", "pts="+r.pts
-    ].join(" | "));
-    const txt = lines.length ? lines.join("\n") : "(暂无记录)";
-    try{ await navigator.clipboard.writeText(txt); logBtn.textContent = "已复制！"; }
-    catch(e){
-      const ta = document.createElement("textarea");
-      ta.value = txt; ta.style.cssText = "position:fixed;left:-9999px;";
-      document.body.appendChild(ta); ta.select();
-      try{ document.execCommand("copy"); logBtn.textContent = "已复制！"; }
-      catch(e2){ logBtn.textContent = "复制失败，请手动截图"; }
-      ta.remove();
-    }
-    setTimeout(()=>{ logBtn.textContent = "复制测试日志"; }, 1600);
-  };
   const ctx = cv.getContext("2d");
   function genZigzag(){ const pts = []; [26,88,150,212,274,314].forEach(x=>pts.push([x, Math.round(rand(56,204))])); return pts; }
   function genSpiral(){ const pts = []; const cx = 170, cy = 130;
@@ -1036,7 +1011,7 @@ function gameTrace(stage, done){
   /* ===== 时间维度参数 =====
      速度分规则：达到门槛速度即拿满，不惩罚「快」；
      慢于门槛则线性递减，到归零线归零（防止一个点一个点慢慢磨） */
-  const GATE_SPEED = 80;   /* 门槛速度 px/s：描摹速度达到此值即拿满速度分 */
+  const GATE_SPEED = 70;   /* 门槛速度 px/s：描摹速度达到此值即拿满速度分 */
   const FLOOR_MULT = 2;    /* 归零线 = 门槛用时 × 2，此时速度分归零 */
   const SPEED_LENIENT = 1.3; /* 螺旋曲率大、难控制，时间门槛放宽 30% */
   /* 三项权重：完成度 30 / 准确度 45 / 速度 25 —— 侧重「画得准不准」 */
@@ -1095,10 +1070,9 @@ function gameTrace(stage, done){
     let coverScore = 0, accScore = 0, speedScore = 0;
     const elapsed = t0 ? (performance.now() - t0) / 1000 : 0;
     if (drawn.length > 3 && t0){
-      let devSum = 0; drawn.forEach(p=>{ devSum += distToPath(p[0],p[1]); });
-      const avgDev = devSum/drawn.length;
       /* 90分位偏离：取最贴合的 90% 的点之外的那个值作为代表偏离，
-         容忍 10% 的离群点，但整体偏移会被如实反映 */
+         容忍 10% 的离群点（起笔收笔的自然失误），
+         但能抓住「系统性画偏」和「局部大偏」，避免平均值把严重偏差稀释掉 */
       const devs = drawn.map(p=>distToPath(p[0],p[1])).sort((a,b)=>a-b);
       const p90Dev = devs[Math.min(devs.length-1, Math.floor(devs.length * ACC_Q))];
       let covered = 0;
@@ -1122,20 +1096,7 @@ function gameTrace(stage, done){
                  : (floor - elapsed) / (floor - gate) * 100;
       speedScore = clamp(speedScore, 0, 100) * (W_SPEED/100) * eff;
       score = clamp(Math.round(coverScore + accScore + speedScore), 5, 100);
-      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b>'
-        + ' <span id="__dbg" style="opacity:.5;font-size:12px">C' + coverScore.toFixed(1)
-        + ' A' + accScore.toFixed(1) + ' S' + speedScore.toFixed(1)
-        + ' | p90 ' + p90Dev.toFixed(2) + 'px (avg ' + avgDev.toFixed(2) + ')</span>';
-      /* 调试日志：每轮把原始指标记到 window.__traceLog，便于调参分析 */
-      (window.__traceLog = window.__traceLog || []).push({
-        round: round, score: score,
-        cover: +coverScore.toFixed(2), acc: +accScore.toFixed(2), speed: +speedScore.toFixed(2),
-        p90: +p90Dev.toFixed(2), avg: +avgDev.toFixed(2),
-        max: +devs[devs.length-1].toFixed(2), min: +devs[0].toFixed(2),
-        coverage: +(coverage*100).toFixed(1), eff: +eff.toFixed(2),
-        elapsed: +elapsed.toFixed(2), gate: +gate.toFixed(2),
-        pts: drawn.length, kind: path.length
-      });
+      msg.innerHTML = '用时 <b style="color:#ffe082">' + elapsed.toFixed(1) + '秒</b>';
     }
     roundScores.push(score);
     roundInfo.push({ score:score, elapsed:elapsed, bench:bench });
