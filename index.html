@@ -733,6 +733,8 @@ const LAST_KEY = "sainou_last";
 const SHARE_PREFIX = "TQ1-";
 /* 旧版「上次鉴定」的存储键 —— 展示已整条移除，这里只负责把残留数据清掉 */
 const LEGACY_KEY = "sainou_best";
+/* 单项挑战的最佳成绩 —— 完整跑完一次鉴定后清空重来 */
+const SINGLE_KEY = "sainou_single";
 
 /* 把任意来源的分数规整成 15 项合法数值 */
 function normScores(P){
@@ -808,6 +810,13 @@ function partyMaxPlayerLv(slots){
 /* 清掉旧版「上次鉴定」的残留数据（该条目已整条移除） */
 function purgeLegacyBest(storage){
   try{ storage.removeItem(LEGACY_KEY); }catch(e){}
+}
+/* 清空单项挑战的最佳成绩。
+   完整跑完一次鉴定后，角色的数据已经写进小队槽位，单项最佳成绩
+   就没有参考价值了 —— 清空后可以从零开始冲击新的纪录。
+   注意：只清单项成绩，不动魔王通关标记（否则真·魔王会被重新锁住）。 */
+function clearSingleBests(storage){
+  try{ storage.removeItem(SINGLE_KEY); }catch(e){}
 }
 
 /* 槽位的现算信息：职业 / 等级 / 称号 / 才能技能 */
@@ -2055,6 +2064,11 @@ function renderResult(){
     pendingSlot = null;
     refreshSlotHint();
   }
+  /* 完整跑完一次鉴定后清空单项挑战的最佳成绩 ——
+     角色数据已经保存（最近结果 + 槽位），单项纪录可以重新挑战。
+     只清单项成绩，魔王通关标记保持不变。 */
+  { const s = store(); if (s) clearSingleBests(s); }
+  buildSingleList();
   S.finalTitle = title; S.finalLv = lv;
   S.bossResult = null;
   refreshBossArea();
@@ -2098,7 +2112,7 @@ $("btnShareImport").onclick = ()=>{ doImport(); };
 $("btnRestart").onclick = ()=>{ releasePendingSlot(); show("scr-title"); refreshSlotHint(); };
 
 /* ================= SINGLE MODE ================= */
-function singleBests(){ try { return JSON.parse(localStorage.getItem("sainou_single") || "{}"); } catch(e){ return {}; } }
+function singleBests(){ try { return JSON.parse(localStorage.getItem(SINGLE_KEY) || "{}"); } catch(e){ return {}; } }
 function buildSingleList(){
   const box = $("singleList"); if (!box) return;
   box.innerHTML = "";
@@ -2142,7 +2156,7 @@ function showSingleResult(g, score, detail){
   const bests = singleBests();
   const prev = bests[g.title] || 0;
   const isRecord = score > prev;
-  if (isRecord){ bests[g.title] = score; try { localStorage.setItem("sainou_single", JSON.stringify(bests)); } catch(e){} }
+  if (isRecord){ bests[g.title] = score; try { localStorage.setItem(SINGLE_KEY, JSON.stringify(bests)); } catch(e){} }
   $("sgGame").textContent = g.title;
   $("sgParam").textContent = "类别：" + PARAM_NAME[g.cat];
   $("sgRank").textContent = rankOf(score);
