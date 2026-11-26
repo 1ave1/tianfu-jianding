@@ -1002,6 +1002,31 @@ function gameTrace(stage, done){
   msg.style.color = "#cfeaff"; msg.style.lineHeight = "1.6";
   const btn = document.createElement("button"); btn.className = "btn"; btn.textContent = "确定";
   stage.appendChild(cv); stage.appendChild(msg); stage.appendChild(btn);
+  /* 调试用：复制本测试的详细指标（调完参数会移除） */
+  const logBtn = document.createElement("button");
+  logBtn.className = "btn sub"; logBtn.textContent = "复制测试日志";
+  logBtn.style.cssText = "display:block;margin:8px auto 0;font-size:12px;padding:6px 14px;";
+  stage.appendChild(logBtn);
+  logBtn.onclick = async ()=>{
+    const rows = window.__traceLog || [];
+    const lines = rows.map(r => [
+      "#"+r.round, "score="+r.score, "C="+r.cover, "A="+r.acc, "S="+r.speed,
+      "p90="+r.p90+"px", "avg="+r.avg+"px", "max="+r.max+"px", "min="+r.min+"px",
+      "cov="+r.coverage+"%", "eff="+r.eff,
+      "t="+r.elapsed+"s", "gate="+r.gate+"s", "pts="+r.pts
+    ].join(" | "));
+    const txt = lines.length ? lines.join("\n") : "(暂无记录)";
+    try{ await navigator.clipboard.writeText(txt); logBtn.textContent = "已复制！"; }
+    catch(e){
+      const ta = document.createElement("textarea");
+      ta.value = txt; ta.style.cssText = "position:fixed;left:-9999px;";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); logBtn.textContent = "已复制！"; }
+      catch(e2){ logBtn.textContent = "复制失败，请手动截图"; }
+      ta.remove();
+    }
+    setTimeout(()=>{ logBtn.textContent = "复制测试日志"; }, 1600);
+  };
   const ctx = cv.getContext("2d");
   function genZigzag(){ const pts = []; [26,88,150,212,274,314].forEach(x=>pts.push([x, Math.round(rand(56,204))])); return pts; }
   function genSpiral(){ const pts = []; const cx = 170, cy = 130;
