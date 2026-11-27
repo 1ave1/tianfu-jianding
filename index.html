@@ -900,6 +900,28 @@ function spatialBuildRound(round, rnd){
   /* correct 必须是数组 —— options 里的元素也是数组，UI 层用 join("") 比较 */
   return { pat: pat, options: options, correct: correctPat, mislead: mislead };
 }
+
+/* ---------- 斯特鲁普测试：纯逻辑 ---------- */
+const STROOP_Q = 6;             /* 共 6 题 */
+const STROOP_LIMIT = 5000;      /* 每题限时 5 秒 */
+const STROOP_BONUS_FULL = 2000; /* 2 秒内答对 = 满分速度加成 */
+const STROOP_BONUS_ZERO = 5000; /* 5 秒（踩线）答对 = 没有速度加成 */
+const STROOP_BONUS_MAX = 2;     /* 单题速度加成上限 */
+const STROOP_HARD_FROM = 2;     /* 第 2 题起：文字含义与颜色不一致 */
+const STROOP_COLORED_OPT_FROM = 4;  /* 第 4 题起：选项文字本身也带上颜色 */
+/* 单题速度加成：
+   ≤2 秒 → 满分；2~5 秒 → 线性递减；≥5 秒 → 0 分 */
+function stroopSpeedBonus(elapsedMs){
+  if (elapsedMs <= STROOP_BONUS_FULL) return STROOP_BONUS_MAX;
+  if (elapsedMs >= STROOP_BONUS_ZERO) return 0;
+  const ratio = (STROOP_BONUS_ZERO - elapsedMs) / (STROOP_BONUS_ZERO - STROOP_BONUS_FULL);
+  return Math.round(STROOP_BONUS_MAX * ratio);
+}
+/* 总分：正确率占主导（每题 15 分），速度只做小幅修饰（每题最多 2 分）
+   保证「多答对一题」永远比「少答对一题但更快」更值钱 */
+function stroopTotalScore(correct, speedBonus){
+  return clamp(correct * 15 + speedBonus, 5, 100);
+}
 /*DOMAIN_END*/
 
 /*PARTY_START*/
@@ -1854,20 +1876,30 @@ function gameStroop(stage, done){
     qn++; answered = false; shownAt = performance.now();
     inkIdx = randi(0, 3);
     let wordIdx = inkIdx;
-    if (qn >= 2){ const others = [0,1,2,3].filter(i=>i !== inkIdx); wordIdx = pick(others); }
+    /* 第 2 题起：文字含义与颜色不一致 */
+    if (qn >= STROOP_HARD_FROM){ const others = [0,1,2,3].filter(i=>i !== inkIdx); wordIdx = pick(others); }
     word.textContent = COLORS[wordIdx].name; word.style.color = COLORS[inkIdx].hex;
     choices.innerHTML = "";
     curBtns = [];
     shuffle([0,1,2,3]).forEach(ci=>{
       const b = document.createElement("button"); b.className = "choice"; b.style.textAlign = "center";
       b.textContent = COLORS[ci].name; b.style.fontWeight = "900"; b.style.fontSize = "20px";
-      if (qn >= 4) b.style.color = COLORS[randi(0,3)].hex;
+      /* 第 4 题起：选项文字本身也带上颜色（与最后一题同难度） */
+      if (qn >= STROOP_COLORED_OPT_FROM) b.style.color = COLORS[randi(0,3)].hex;
       b.onclick = ()=>answer(ci, b);
       curBtns.push({ b:b, ci:ci });
       choices.appendChild(b);
     });
     const myQ = qn;
-    T(()=>{ if (!answered && qn === myQ){ answered = true; jingle(false); reveal(null); judgeToast(false); T(next, 900); } }, 4200);
+    /* 倒计时条：让 5 秒限时可见（同时驱动超时判定） */
+    const tick = ()=>{
+      if (answered || qn !== myQ){ setTimebar(null); return; }
+      const left = STROOP_LIMIT - (performance.now() - shownAt);
+      setTimebar(Math.max(0, left / STROOP_LIMIT));
+      if (left <= 0){ setTimebar(null); answered = true; jingle(false); reveal(null); judgeToast(false); T(next, 900); return; }
+      T(tick, 100);
+    };
+    T(tick, 100);
   }
   function reveal(picked){
     curBtns.forEach(o=>{ if (o.ci === inkIdx){ o.b.style.background = "#2e7d32"; o.b.style.borderColor = "#ffd54f"; o.b.style.color = "#fff"; }
@@ -1875,14 +1907,16 @@ function gameStroop(stage, done){
   }
   function answer(ci, b){
     if (answered) return; answered = true;
+    setTimebar(null);
     const ok = ci === inkIdx;
-    if (ok){ correct++; speedBonus += clamp(Math.round(5 - (performance.now()-shownAt)/1000), 0, 2); jingle(true); }
+    /* 答对按速度给加成：2 秒内满分，5 秒以上没有加成 */
+    if (ok){ correct++; speedBonus += stroopSpeedBonus(performance.now()-shownAt); jingle(true); }
     else jingle(false);
     reveal(b); judgeToast(ok);
     T(next, 900);
   }
   function next(){
-    if (qn >= 5) done(clamp(correct*18 + speedBonus, 5, 100), "战胜干扰 " + correct + "/5");
+    if (qn >= STROOP_Q) done(stroopTotalScore(correct, speedBonus), "战胜干扰 " + correct + "/" + STROOP_Q);
     else startQ();
   }
   startQ();
@@ -2154,7 +2188,7 @@ const GAMES = [
   { cat:"calc",    title:"心算挑战", instr:"从3个选项中选出答案。按速度与准确度计分。", run:gameCalc,
     rule:"从3个选项中选出计算结果。共5题，难度递增，速度也会计入评分。" },
   { cat:"focus",   title:"斯特鲁普测试", instr:"要回答的是文字的「颜色」而不是「含义」。别被迷惑，选出正确的。", run:gameStroop,
-    rule:"颜色的名称会用另一种颜色显示。要回答的是「文字的颜色」而非「文字的含义」。共5题。后半段连选项文字本身也带上颜色，迷惑性更强。每题请在4秒内作答。" },
+    rule:"颜色的名称会用另一种颜色显示。要回答的是「文字的颜色」而非「文字的含义」。共6题。后半段连选项文字本身也带上颜色，迷惑性更强。每题限5秒，2秒内答对可拿速度满分。" },
   { cat:"intuition", title:"点数比较", instr:"一闪而过的一群点，凭直觉猜哪边更多。", run:gameDots,
     rule:"左右两边的点群只显示一瞬。凭直觉猜数量更多的一边。共5题，两边的数量差会越来越接近。" },
   { cat:"time",    title:"体内时钟", instr:"不会显示秒数。觉得目标秒数到了就点停止。", run:gameClock, noReady:true,
