@@ -897,7 +897,8 @@ function spatialBuildRound(round, rnd){
   }
   if (distract.length < 3) return null;
   const options = shuffle([correctPat].concat(distract));
-  return { pat: pat, options: options, correct: spatialKey(correctPat), mislead: mislead };
+  /* correct 必须是数组 —— options 里的元素也是数组，UI 层用 join("") 比较 */
+  return { pat: pat, options: options, correct: correctPat, mislead: mislead };
 }
 /*DOMAIN_END*/
 
