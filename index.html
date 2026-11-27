@@ -903,24 +903,91 @@ function spatialBuildRound(round, rnd){
 
 /* ---------- 斯特鲁普测试：纯逻辑 ---------- */
 const STROOP_Q = 6;             /* 共 6 题 */
-const STROOP_LIMIT = 5000;      /* 每题限时 5 秒 */
-const STROOP_BONUS_FULL = 2000; /* 2 秒内答对 = 满分速度加成 */
-const STROOP_BONUS_ZERO = 5000; /* 5 秒（踩线）答对 = 没有速度加成 */
-const STROOP_BONUS_MAX = 2;     /* 单题速度加成上限 */
+const STROOP_LIMIT = 4000;      /* 每题限时 4 秒 */
+const STROOP_BONUS_FULL = 1500; /* 1.5 秒内答对 = 满分速度加成 */
+const STROOP_BONUS_ZERO = 4000; /* 4 秒（踩线）答对 = 没有速度加成 */
+const STROOP_BONUS_MAX = 5;     /* 单题速度加成上限 */
 const STROOP_HARD_FROM = 2;     /* 第 2 题起：文字含义与颜色不一致 */
 const STROOP_COLORED_OPT_FROM = 4;  /* 第 4 题起：选项文字本身也带上颜色 */
 /* 单题速度加成：
-   ≤2 秒 → 满分；2~5 秒 → 线性递减；≥5 秒 → 0 分 */
+   ≤1.5 秒 → 满分；1.5~4 秒 → 线性递减；≥4 秒 → 0 分 */
 function stroopSpeedBonus(elapsedMs){
   if (elapsedMs <= STROOP_BONUS_FULL) return STROOP_BONUS_MAX;
   if (elapsedMs >= STROOP_BONUS_ZERO) return 0;
   const ratio = (STROOP_BONUS_ZERO - elapsedMs) / (STROOP_BONUS_ZERO - STROOP_BONUS_FULL);
   return Math.round(STROOP_BONUS_MAX * ratio);
 }
-/* 总分：正确率占主导（每题 15 分），速度只做小幅修饰（每题最多 2 分）
-   保证「多答对一题」永远比「少答对一题但更快」更值钱 */
+/* 总分：正确率每题 12 分，速度加成每题最多 5 分（时间权重明显加大）
+   6 题全对且都在 1.5 秒内 → 72 + 30 = 102 → 截到 100 */
 function stroopTotalScore(correct, speedBonus){
-  return clamp(correct * 15 + speedBonus, 5, 100);
+  return clamp(correct * 12 + speedBonus, 5, 100);
+}
+/* ---------- 防重题 ---------- */
+/* 题目由「文字含义」+「墨色」两个维度决定。
+   要求相邻两题的这两个维度都与上一题不同：
+     · 文字含义不能与上一题相同
+     · 墨色也不能与上一题相同
+   两个条件同时满足才算合格。 */
+function stroopPicksRepeat(prev, wordIdx, inkIdx){
+  if (!prev) return false;
+  return prev.wordIdx === wordIdx || prev.inkIdx === inkIdx;
+}
+/**
+ * 生成一题的（文字含义, 墨色）组合，避开上一题。
+ * @param prev    上一题的 {wordIdx, inkIdx}，首题为 null
+ * @param conflict true = 要求「含义 ≠ 墨色」（第 2 题起的斯特鲁普干扰项）
+ *                false = 要求「含义 = 墨色」（第 1 题，不制造干扰）
+ * @param rnd     随机源
+ * @returns {wordIdx, inkIdx} 或 null（找不到合法组合）
+ */
+function stroopPickNoRepeat(prev, conflict, rnd){
+  const r = rnd || Math.random;
+  const N = 4;
+  const cands = [];
+  for (let w = 0; w < N; w++){
+    for (let k = 0; k < N; k++){
+      /* 难度要求：conflict 时含义与墨色必须不同；否则必须相同 */
+      if (conflict ? (w === k) : (w !== k)) continue;
+      /* 防重题：两个维度都不能与上一题相同 */
+      if (prev && (w === prev.wordIdx || k === prev.inkIdx)) continue;
+      cands.push({ wordIdx: w, inkIdx: k });
+    }
+  }
+  if (!cands.length) return null;
+  return cands[Math.floor(r() * cands.length)];
+}
+
+/* ---------- 选项配色（错排） ---------- */
+/* 4 个选项的文字分别是 4 种颜色名。要求给选项上色时：
+     1. 四个选项的颜色互不相同（是个排列）
+     2. 每个选项的颜色 ≠ 它自己的文字含义
+   这正是「错排」(derangement)：把 4 个颜色排到 4 个位置上，
+   且没有任何一个颜色落在它自己的位置上。
+   4 个元素的错排有 9 种，所以永远有解，不会卡死。 */
+/**
+ * 给 n 个选项生成满足错排约束的颜色分配。
+ * @param n      选项个数（= 颜色个数）
+ * @param rnd    随机源
+ * @returns 长度 n 的数组 color[i] = 选项 i 的颜色索引，或 null（n<2 时无解）
+ */
+function stroopDerangeColors(n, rnd){
+  if (n < 2) return null;
+  const r = rnd || Math.random;
+  /* 枚举全部排列，筛出错排 */
+  const idx = [];
+  for (let i = 0; i < n; i++) idx.push(i);
+  const perms = [];
+  (function perm(arr, rest){
+    if (!rest.length){ perms.push(arr.slice()); return; }
+    for (let i = 0; i < rest.length; i++){
+      const [x] = rest.splice(i, 1);
+      perm(arr.concat([x]), rest);
+      rest.splice(i, 0, x);
+    }
+  })([], idx.slice());
+  const derangements = perms.filter(p => p.every((c, i) => c !== i));
+  if (!derangements.length) return null;
+  return derangements[Math.floor(r() * derangements.length)];
 }
 /*DOMAIN_END*/
 
@@ -1872,20 +1939,33 @@ function gameStroop(stage, done){
   const choices = document.createElement("div"); choices.className = "choices";
   stage.appendChild(word); stage.appendChild(choices);
   let qn = 0, correct = 0, speedBonus = 0, answered = false, shownAt = 0, inkIdx = 0, curBtns = [];
+  /* 上一题的（文字含义, 墨色），用于防重题 */
+  let prevPick = null;
   function startQ(){ tapGuard(stage);
     qn++; answered = false; shownAt = performance.now();
-    inkIdx = randi(0, 3);
-    let wordIdx = inkIdx;
-    /* 第 2 题起：文字含义与颜色不一致 */
-    if (qn >= STROOP_HARD_FROM){ const others = [0,1,2,3].filter(i=>i !== inkIdx); wordIdx = pick(others); }
+    /* 防重题：相邻两题的文字含义与墨色都必须与上一题不同。
+       从第 2 题起额外要求「含义 ≠ 墨色」（斯特鲁普干扰项）。 */
+    const needConflict = qn >= STROOP_HARD_FROM;
+    const p = stroopPickNoRepeat(prevPick, needConflict, null);
+    if (!p){ qn--; startQ(); return; }   /* 兜底：理论上不会发生 */
+    const wordIdx = p.wordIdx;
+    inkIdx = p.inkIdx;
+    prevPick = { wordIdx: wordIdx, inkIdx: inkIdx };
     word.textContent = COLORS[wordIdx].name; word.style.color = COLORS[inkIdx].hex;
     choices.innerHTML = "";
     curBtns = [];
-    shuffle([0,1,2,3]).forEach(ci=>{
+    /* 选项的显示顺序随机。配色必须在「文字索引」的坐标系里做错排：
+       colorOfByWord[w] = 文字为 w 的那个选项该用的颜色。
+       这样「颜色 ≠ 自己的文字」与显示顺序无关，恒成立。 */
+    const order = shuffle([0,1,2,3]);
+    /* 错排：4 色互不相同，且每个颜色都落在「不是自己文字」的那个选项上 */
+    const colorOfByWord = stroopDerangeColors(4, null);
+    order.forEach((ci)=>{
       const b = document.createElement("button"); b.className = "choice"; b.style.textAlign = "center";
       b.textContent = COLORS[ci].name; b.style.fontWeight = "900"; b.style.fontSize = "20px";
-      /* 第 4 题起：选项文字本身也带上颜色（与最后一题同难度） */
-      if (qn >= STROOP_COLORED_OPT_FROM) b.style.color = COLORS[randi(0,3)].hex;
+      /* 第 4 题起：选项文字本身也带上颜色（与最后一题同难度）
+         配色用错排：4 色互不相同，且都 ≠ 自己的文字 */
+      if (qn >= STROOP_COLORED_OPT_FROM) b.style.color = COLORS[colorOfByWord[ci]].hex;
       b.onclick = ()=>answer(ci, b);
       curBtns.push({ b:b, ci:ci });
       choices.appendChild(b);
@@ -2188,7 +2268,7 @@ const GAMES = [
   { cat:"calc",    title:"心算挑战", instr:"从3个选项中选出答案。按速度与准确度计分。", run:gameCalc,
     rule:"从3个选项中选出计算结果。共5题，难度递增，速度也会计入评分。" },
   { cat:"focus",   title:"斯特鲁普测试", instr:"要回答的是文字的「颜色」而不是「含义」。别被迷惑，选出正确的。", run:gameStroop,
-    rule:"颜色的名称会用另一种颜色显示。要回答的是「文字的颜色」而非「文字的含义」。共6题。后半段连选项文字本身也带上颜色，迷惑性更强。每题限5秒，2秒内答对可拿速度满分。" },
+    rule:"颜色的名称会用另一种颜色显示。要回答的是「文字的颜色」而非「文字的含义」。共6题。后半段连选项文字本身也带上颜色，迷惑性更强。每题限4秒。" },
   { cat:"intuition", title:"点数比较", instr:"一闪而过的一群点，凭直觉猜哪边更多。", run:gameDots,
     rule:"左右两边的点群只显示一瞬。凭直觉猜数量更多的一边。共5题，两边的数量差会越来越接近。" },
   { cat:"time",    title:"体内时钟", instr:"不会显示秒数。觉得目标秒数到了就点停止。", run:gameClock, noReady:true,
